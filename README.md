@@ -19,15 +19,15 @@ Use for OSINT and discovering attack-surface of penetration test targets.
 Find hostnames that share an IP address with your target which can be a hostname or an IP address.
 This uses the Bing.com feature of seaching by IP address, e.g. "IP:40.112.72.205".
 
-Usage: ./bing-ip2hosts [OPTIONS] <IP|hostname>
+Usage: ./bing-ip2hosts [OPTIONS] IP|hostname
 
 OPTIONS are:
--o <FILE>	Output hostnames to FILE.
--n		Turn off colour and animations.
--t <DIR>	Use this directory instead of /tmp.
--i		Optional CSV output. Outputs the IP and hostname on each line, separated by a comma.
--p		Optional http:// prefix output. Useful for right-clicking in the shell.
--m <NUM>	Stop after NUM scraped pages return no new results (Default: 5). 
+-o FILE	Output hostnames to FILE.
+-m NUM	Stop after NUM scraped pages return no new results (Default: 5).
+-q 			Quiet. Disable output except for final results.
+-t DIR	Use this directory instead of /tmp.
+-i	CSV output. Outputs the IP and hostname on each line, separated by a comma.
+-p	URL Output. Outputs URLs rather than hostnames.
 ```
 
 INSTALL
