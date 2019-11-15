@@ -8,12 +8,13 @@ HELP
 -------
 Use the following command for usage information.
 
-bing-ip2hosts (0.3) by Andrew Horton aka urbanadventurer
+bing-ip2hosts (o.4) by Andrew Horton aka urbanadventurer
 Homepage: http://www.morningstarsecurity.com/research/bing-ip2hosts
 
-Find hostnames that share an IP address with your target which can be a hostname or
-an IP address.  This makes use of Microsoft Bing.com ability to seach by IP address, 
-e.g. "IP:210.48.71.196".
+Useful for web intelligence and attack surface mapping of vhosts during
+penetration tests. Find hostnames that share an IP address with your target 
+which can be a hostname or an IP address.  This makes use of Microsoft 
+Bing.com ability to seach by IP address, e.g. "IP:210.48.71.196".
 
 Usage: ./bing-ip2hosts [OPTIONS] <IP|hostname>
 
