@@ -1,22 +1,35 @@
-Version 0.5
-* Fixed three misinterpreted HTML parsings that had broken version 0.4 -lh
 
-Version 0.4
+Version 0.6 November, 2019
+* New parsing of Bing.com results
+* Catches ctrl-c from the commandline and shows output
+* Improved debugging output
+* Changed animation
+* Stops after a reaching a threshold of scraped pages do not return any new results
+* Add support for language and region/market
+* Updated option arguments
+* Removed version history from script
+* Add output file
+
+Version 0.5 October 7th, 2015
+* Unofficial version by loophole / lh (lh@hhp-programming.net) 
+* Homepage: http://HAX.GS
+* Fixed misinterpreted HTML parsings that broke the script
+
+Version 0.4 December 19th, 2013
 * Updated usage
 * Fixed tmp file issue where files weren't being deleted
 * Resolves hostnames using nslookup instead of resolveip. Thanks Xavier Mertens
 
-Version 0.3
+Version 0.3 September 21st, 2012
 * Updated the progress animation with results found, and the current page being searched
 * Updated scraper to use the main bing.com site as the mobile bing site changed how it showed results
 * Updated usage info
 
-Version 0.2
+Version 0.2 April 2nd, 2010
 * You can enter a hostname not just an IP, eg. bing-ip2hosts foo.com
 * Uses /tmp instead of the current path for creating temporary files
 * Optional CSV output. Outputs the IP and hostname on each line, separated by a comma.
 * Optionally prefix hostnames with http:// so they can be right-clicked in the shell
 
-Version 0.1 Released December 2nd, 2009 at Kiwicon III in New Zealand
-
-
+Version 0.1 December 2nd, 2009
+* Released at Kiwicon III conference in New Zealand
