@@ -200,14 +200,14 @@ stop_sequence="0"
 for ((i = 0; i < (($STOP_AFTER_PAGES-1)); i++)); do stop_sequence+=" 0"; done
 
 # if the parameter looks like an IP go ahead, otherwise resolve it
-if [[ `echo "$1" | egrep  "(([0-9]+\.){3}[0-9]+)|\[[a-f0-9:]+\]"`  ]]; then
+if [[ "$1" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   IP="$1"
 else
   # IP=`resolveip -s "$1"`
   IP=`nslookup "$1" | egrep "^Address: \w+\.\w+\.\w+\.\w+$" | tail -1 | awk '{ print $2 }'`
   #  dig -t a treshna.com  +short
   if [ "$IP" == "" ]; then
-    echo "Cannot resolve $1 to an IP" >&2
+    echo "Cannot resolve $1 to an IP address." >&2
     exit 1
   fi
 fi
