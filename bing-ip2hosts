@@ -25,7 +25,7 @@ VERSION=0.6
 TMP_DIR=/tmp
 QUIET=0
 OUTPUT_IP=0
-FIND_URLS=0
+DISPLAY_URL_PREFIX=1
 IP=
 PREFIX=
 SUFFIX=
@@ -100,7 +100,7 @@ function show_hosts() {
     PREFIX="$IP,"
   fi
 
-  if [[ $FIND_URLS == 1 ]]; then
+  if [[ $DISPLAY_URL_PREFIX == 1 ]]; then
     SUFFIX="/"
   fi
 
@@ -136,7 +136,7 @@ OPTIONS are:
 -q\tQuiet. Disable output except for final results.
 -t DIR\tUse this directory instead of /tmp.
 -i\tCSV output. Outputs the IP and hostname on each line, separated by a comma.
--u\tInclude the URL prefix in output. Default is to only show hostnames.
+-u\tOnly display hostnames. Default is to include URL prefixes.
 "
 exit 1
 fi
@@ -148,7 +148,7 @@ while getopts "o:n:qt:iu" optionName; do
     q) QUIET=1;;
     t) TMP_DIR="$OPTARG";;
     i) OUTPUT_IP=1;;
-    u) FIND_URLS=1;;
+    u) DISPLAY_URL_PREFIX=0;;
 [?]) echo "Error"; exit 1;;
 esac
 done
@@ -239,7 +239,7 @@ while [[ -z "$last_page_check" ]] && [[ -n "$results_count" ]] && [[ -z "$single
 
   results=`cat "$out"| egrep -o "<h2><a href=\"[^\"]+" $out | cut -d '"' -f 2`
 
-  if [[ $FIND_URLS == 1 ]]; then
+  if [[ $DISPLAY_URL_PREFIX == 1 ]]; then
     vhosts=`echo "$results" | cut -d '/' -f 1-3 | tr '[:upper:]' '[:lower:]'`
   else
     vhosts=`echo "$results" | cut -d '/' -f 3 | tr '[:upper:]' '[:lower:]'`
