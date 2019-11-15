@@ -131,7 +131,7 @@ Usage: $0 [OPTIONS] IP|hostname
 
 OPTIONS are:
 -o FILE\tOutput hostnames to FILE.
--m NUM\tStop after NUM scraped pages return no new results (Default: $STOPAFTERPAGES).
+-m NUM\tStop after NUM scraped pages return no new results (Default: $STOP_AFTER_PAGES).
 -q\tQuiet. Disable output except for final results.
 -t DIR\tUse this directory instead of /tmp.
 -i\tCSV output. Outputs the IP and hostname on each line, separated by a comma.
