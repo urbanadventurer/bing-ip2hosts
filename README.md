@@ -27,7 +27,7 @@ OPTIONS are:
 -q	Quiet. Disable output except for final results.
 -t DIR	Use this directory instead of /tmp.
 -i	CSV output. Outputs the IP and hostname on each line, separated by a comma.
--u	Include the URL prefix in output. Default is to only show hostnames.
+-u	Only display hostnames. Default is to include URL prefixes.
 
 ```
 
