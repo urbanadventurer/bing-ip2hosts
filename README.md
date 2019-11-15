@@ -23,11 +23,12 @@ Usage: ./bing-ip2hosts [OPTIONS] IP|hostname
 
 OPTIONS are:
 -o FILE	Output hostnames to FILE.
--m NUM	Stop after NUM scraped pages return no new results (Default: 5).
--q 			Quiet. Disable output except for final results.
+-n NUM	Stop after NUM scraped pages return no new results (Default: 5).
+-q	Quiet. Disable output except for final results.
 -t DIR	Use this directory instead of /tmp.
 -i	CSV output. Outputs the IP and hostname on each line, separated by a comma.
--p	URL Output. Outputs URLs rather than hostnames.
+-u	Include the URL prefix in output. Default is to only show hostnames.
+
 ```
 
 INSTALL
