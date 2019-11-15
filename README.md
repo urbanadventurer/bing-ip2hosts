@@ -1,3 +1,5 @@
+[![License](https://img.shields.io/badge/license-GPLv2-green.svg)](https://raw.githubusercontent.com/urbanadventurer/whatweb/master/LICENSE)
+
 bingip2hosts is a Bing.com web scraper that discovers websites by IP address.
 
 INTRODUCTION
@@ -10,21 +12,23 @@ HELP
 -------
 Use the following command for usage information.
 
-bingip2hosts is a Bing.com web scraper that discovers websites by IP address.
-Use for web intelligence and attack-surface mapping of targets.
+```
+bing-ip2hosts is a Bing.com web scraper that discovers websites by IP address.
+Use for OSINT and discovering attack-surface of penetration test targets.
 
-Find hostnames that share an IP address with your target which can be a hostname or an IP address. This makes use of Microsoft 
-Bing.com ability to seach by IP address, e.g. "IP:210.48.71.196".
+Find hostnames that share an IP address with your target which can be a hostname or an IP address.
+This uses the Bing.com feature of seaching by IP address, e.g. "IP:40.112.72.205".
 
 Usage: ./bing-ip2hosts [OPTIONS] <IP|hostname>
 
 OPTIONS are:
--n		Turn off the progress indicator animation
--t <DIR>	Use this directory instead of /tmp. The directory must exist.
+-o <FILE>	Output hostnames to FILE.
+-n		Turn off colour and animations.
+-t <DIR>	Use this directory instead of /tmp.
 -i		Optional CSV output. Outputs the IP and hostname on each line, separated by a comma.
 -p		Optional http:// prefix output. Useful for right-clicking in the shell.
 -m <NUM>	Stop after NUM scraped pages return no new results (Default: 5). 
-
+```
 
 INSTALL
 -------
@@ -38,5 +42,4 @@ LIMITATIONS
 * Will stop scraping pages when a captcha is presented by Bing
 
 Homepage: http://www.morningstarsecurity.com/research/bing-ip2hosts/
-
-
+Source: https://github.com/urbanadventurer/bing-ip2hosts
