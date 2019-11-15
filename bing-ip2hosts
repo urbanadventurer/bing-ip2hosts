@@ -31,7 +31,7 @@ PREFIX=
 SUFFIX=
 DEBUG=0
 STOP_AFTER_PAGES=5
-LANG=en-us
+BING_SETLANG=en-us
 
 trap ctrl_c INT
 
@@ -221,7 +221,7 @@ while [[ -z "$last_page_check" ]] && [[ -n "$results_count" ]] && [[ -z "$single
     echo -en "[${animation: $(( $page % 4 )) :1}][ $IP | Scraping page $((page + 1)) | Results: $results_count | Found $uniq_hosts ]"
   fi
 
-  url="https://www.bing.com/search?q=ip%3A$IP+.&qs=n&first=${page}0&FORM=PERE&setlang=$LANG"
+  url="https://www.bing.com/search?q=ip%3A$IP+.&qs=n&first=${page}0&FORM=PERE&setlang=$BING_SETLANG"
   out=`mktemp -p "$TMP_DIR" -t bing-ip2hosts.tmp.XXXXXX`
 
   if ! wget --quiet --no-check-certificate --output-document "$out" "$url"; then
