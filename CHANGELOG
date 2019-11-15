@@ -1,0 +1,10 @@
+
+Version 0.2
+* You can enter a hostname not just an IP, eg. bing-ip2hosts foo.com
+* Uses /tmp instead of the current path for creating temporary files
+* Optional CSV output. Outputs the IP and hostname on each line, separated by a comma.
+* Optionally prefix hostnames with http:// so they can be right-clicked in the shell
+
+Version 0.1 Released December 2nd, 2009 at Kiwicon III in New Zealand
+
+

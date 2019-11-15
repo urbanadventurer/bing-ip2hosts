@@ -1,0 +1,107 @@
+#!/bin/bash
+# bing-ip2hosts - Enumerate hostnames from Bing.com for an IP address.
+# Bing.com is Microsoft's search engine which has an IP: search parameter.
+#
+# By Andrew Horton aka urbanadventurer, MorningStar Security
+# Homepage: http://www.morningstarsecurity.com/research/bing-ip2hosts
+#
+# Version 0.2 Released April 2nd, 2010
+# Version 0.1 Released December 2nd, 2009 at Kiwicon III in New Zealand
+#
+# License: GPLv3
+
+VERSION=0.2
+TMPDIR=/tmp
+ANIMATION=1
+OUTPUTIP=0
+HTTPPREFIX=0
+IP=
+PREFIX=
+
+if [ -z "$1" ] || [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
+echo -e "Usage: $0 [OPTIONS] <IP|hostname>
+bing-ip2hosts ($VERSION) by Andrew Horton aka urbanadventurer, MorningStarSecurity
+Homepage: http://www.morningstarsecurity.com/research/bing-ip2hosts
+
+Enumerate hostnames from Bing.com for an IP address.
+Bing.com is Microsoft's search engine which has an IP: search parameter.
+You can enter an IP or a hostname that will be resolved to an IP.
+
+OPTIONS are:
+-n\t\tTurn off the progress indicator animation
+-t <DIR>\tUse this directory instead of /tmp. The directory must exist.
+-i\t\tOptional CSV output. Outputs the IP and hostname on each line, separated by a comma.
+-p\t\tOptional http:// prefix output. Useful for right-clicking in the shell.
+"
+exit 1
+fi
+
+while getopts "nipt:" optionName; do
+    case "$optionName" in
+     n) ANIMATION=1;;
+	 t) TMPDIR="$OPTARG";;
+	 i) OUTPUTIP=1;;
+	 p) HTTPPREFIX=1;;
+	 [?]) echo "Error"; exit 1;;
+    esac
+done
+
+shift $(($OPTIND -1))
+
+if [ -z "$1" ]; then
+ echo "need an IP or hostname"
+ exit 1
+fi
+
+animation="/-\|"
+num_vhosts=10
+page=0
+
+# if the parameter looks like an IP go ahead, otherwise resolve it
+if [ `echo "$1" | egrep  "(([0-9]+\.){3}[0-9]+)|\[[a-f0-9:]+\]"`  ]; then
+ IP="$1"
+else
+ IP=`resolveip -s "$1"`
+ if [ "$?" != 0 ]; then
+ 	echo "Error: cannot resolve $1 to an IP"
+	exit
+ fi
+fi
+
+
+all_hosts=`mktemp -p $TMPDIR -t bing-ip2hosts.tmp.XXXXXX`
+
+while [ "$num_vhosts" == 10 ]; do
+ if [ $ANIMATION == 1 ]; then
+  echo -en "${animation: $(( $page % 4 )) :1}"
+ fi
+ url="http://m.bing.com/search/search.aspx?A=webresults&Q=ip%3a$IP&D=Web&SI=$page""0"
+ out=`mktemp -p "$TMPDIR" -t bing-ip2hosts.tmp.XXXXXX`
+ wget -q -O "$out" "$url"
+ vhosts=`cat "$out"| egrep -o  "(<span class=\"c2\">)[^<]+(<\/)" | sed -e 's/<span class="c2">\|<\///g'`
+ num_vhosts=`echo "$vhosts" | wc -l`
+ echo -e "$vhosts" >> "$all_hosts"
+ rm -f "$out"
+ let page=$page+1 
+ if [ $ANIMATION == 1 ]; then
+  echo -ne "\b"
+ fi
+done
+
+uniq_hosts=`cat "$all_hosts" | cut -d '/' -f 1 | tr '[:upper:]' '[:lower:]' | sort | uniq`
+rm -f "$all_hosts"
+
+
+if [ $OUTPUTIP == 1 ]; then
+	PREFIX="$IP,"
+fi
+if [ $HTTPPREFIX == 1 ]; then
+	PREFIX="$PREFIX""http://"
+fi
+
+for h in `echo "$uniq_hosts"`
+do
+	echo "$PREFIX$h"
+done	
+
+
