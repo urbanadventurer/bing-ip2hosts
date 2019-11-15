@@ -224,7 +224,10 @@ while [[ -z "$last_page_check" ]] && [[ -n "$results_count" ]] && [[ -z "$single
   url="https://www.bing.com/search?q=ip%3A$IP+.&qs=n&first=${page}0&FORM=PERE&setlang=$LANG"
   out=`mktemp -p "$TMP_DIR" -t bing-ip2hosts.tmp.XXXXXX`
 
-  wget --quiet --no-check-certificate --output-document "$out" "$url"
+  if ! wget --quiet --no-check-certificate --output-document "$out" "$url"; then
+    echo -e "\n${R}wget failed to scrape $url" >&2
+    exit 1
+  fi
 
   last_page_check=`egrep -o '<span class="sb_count">[0-9]+-([0-9]+) of (\1) results' $out`
   results_count=`egrep -o '<span class="sb_count">[^<]+' $out|cut -d '>' -f 2|cut -d ' ' -f 1-3`
