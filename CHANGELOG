@@ -8,7 +8,8 @@ Version 0.6 November, 2019
 * Catches CTRL-C from the commandline and displays results so far.
 * New ASCII art banner.
 * Output results to a file.
-* Support for language and region/market.
+* Support for changing the search language.
+* Support for setting a search region/market.
 * Displays URL prefixes by default.
 
 ## FIXES
