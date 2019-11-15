@@ -111,24 +111,9 @@ function show_hosts() {
 
 }
 
-# To use proxy set environment variables, http_proxy and https_proxy
-echo $http_proxy
-
-#wget  http://bing.com/
-
-# setmkt=en-us&setlang=en-us
-# gives different results
-
-
-# https://docs.microsoft.com/en-us/rest/api/cognitiveservices-bingsearch/bing-web-api-v5-reference#market-codes
-# setmkt=en-US limits results
-
-#exit
-
 if [ -z "$1" ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
 clear
 banner
-
 
 echo -e "bing-ip2hosts is a Bing.com web scraper that discovers websites by IP address.
 Use for OSINT and discovering attack-surface of penetration test targets.
@@ -167,7 +152,6 @@ if [ -z "$1" ]; then
   echo "need an IP or hostname"
   exit 1
 fi
-################
 
 # initialize outputfile
 if [ ! -z "$OUTPUTFILE" ]; then
@@ -178,15 +162,18 @@ if [ ! -z "$OUTPUTFILE" ]; then
   fi
 fi
 
-# create TMPDIR
+# Create TMPDIR if necessary
 if [ ! -d "$TMPDIR" ]; then
   if [ "$QUIET" = 0 ]; then
     mkdir -v -p "$TMPDIR"
   else
     mkdir -p "$TMPDIR"
   fi
+  if [ ! "$?" = 0 ]; then
+    echo "Aborting. Invalid TMP Directory: $TMPDIR"
+    exit 1
+  fi
 fi
-
 
 if [ $QUIET = 0 ]; then
   clear
