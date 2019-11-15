@@ -36,6 +36,12 @@ trap ctrl_c INT
 
 function ctrl_c() {
   echo -e "\n* ^C"
+
+  # clean up tmp files
+  if [ $DEBUG = 0 ]; then
+    rm -f "$out"
+  fi
+  
   show_hosts
   exit 1
 }
