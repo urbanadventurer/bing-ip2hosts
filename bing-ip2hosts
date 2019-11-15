@@ -261,7 +261,7 @@ while [[ -z "$last_page_check" ]] && [[ -n "$results_count" ]] && [[ -z "$single
   scrape_results+=($new_results)
 
   if [[ ${scrape_results[@]} =~ $stop_sequence ]]; then
-    echo -e "\n${R}Stopping after $STOP_AFTER_PAGES without new results.$N" >&2
+    echo -e "\n${R}Stopping after scraping $STOP_AFTER_PAGES pages without any new results.$N" >&2
     break
   fi
 
