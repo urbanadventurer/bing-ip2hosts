@@ -136,27 +136,27 @@ Use for OSINT and discovering attack-surface of penetration test targets.
 Find hostnames that share an IP address with your target which can be a hostname or an IP address.
 This uses the Bing.com feature of seaching by IP address, e.g. \"IP:40.112.72.205\".
 
-Usage: $0 [OPTIONS] <IP|hostname>
+Usage: $0 [OPTIONS] IP|hostname
 
 OPTIONS are:
--o <FILE>\tOutput hostnames to FILE.
--n\t\tTurn off colour and animations.
--t <DIR>\tUse this directory instead of /tmp.
--i\t\tOptional CSV output. Outputs the IP and hostname on each line, separated by a comma.
--p\t\tOptional http:// prefix output. Useful for right-clicking in the shell.
--m <NUM>\tStop after NUM scraped pages return no new results (Default: $STOPAFTERPAGES). 
+-o FILE\tOutput hostnames to FILE.
+-m NUM\tStop after NUM scraped pages return no new results (Default: $STOPAFTERPAGES).
+-q\tQuiet. Disable colour and animations.
+-t DIR\tUse this directory instead of /tmp.
+-i\tCSV output. Outputs the IP and hostname on each line, separated by a comma.
+-p\tURL Output. Outputs URLs rather than hostnames.
 "
 exit 1
 fi
 
-while getopts "nipt:m:o:" optionName; do
+while getopts "o:m:qt:ip" optionName; do
   case "$optionName" in
-    n) ANIMATION=0;;
+    o) OUTPUTFILE=$OPTARG;;
+    m) STOPAFTERPAGES=$OPTARG;;
+    q) ANIMATION=0;;
     t) TMPDIR="$OPTARG";;
     i) OUTPUTIP=1;;
     p) HTTPPREFIX=1;;
-    m) STOPAFTERPAGES=$OPTARG;;
-    o) OUTPUTFILE=$OPTARG;;
 [?]) echo "Error"; exit 1;;
 esac
 done
