@@ -23,7 +23,7 @@
 
 VERSION=0.6
 TMPDIR=/tmp
-ANIMATION=1
+QUIET=0
 OUTPUTIP=0
 HTTPPREFIX=0
 IP=
@@ -79,7 +79,7 @@ echo -e "$BANNER"
 }
 
 function show_hosts() {
-  if [ $ANIMATION == 1 ]; then
+  if [ $QUIET == 0 ]; then
     echo
   fi
 
@@ -141,7 +141,7 @@ Usage: $0 [OPTIONS] IP|hostname
 OPTIONS are:
 -o FILE\tOutput hostnames to FILE.
 -m NUM\tStop after NUM scraped pages return no new results (Default: $STOPAFTERPAGES).
--q\tQuiet. Disable colour and animations.
+-q\tQuiet. Disable output except for final results.
 -t DIR\tUse this directory instead of /tmp.
 -i\tCSV output. Outputs the IP and hostname on each line, separated by a comma.
 -p\tURL Output. Outputs URLs rather than hostnames.
@@ -153,7 +153,7 @@ while getopts "o:m:qt:ip" optionName; do
   case "$optionName" in
     o) OUTPUTFILE=$OPTARG;;
     m) STOPAFTERPAGES=$OPTARG;;
-    q) ANIMATION=0;;
+    q) QUIET=0;;
     t) TMPDIR="$OPTARG";;
     i) OUTPUTIP=1;;
     p) HTTPPREFIX=1;;
@@ -180,7 +180,7 @@ fi
 
 # create TMPDIR
 
-if [ $ANIMATION == 1 ]; then
+if [ $QUIET == 0 ]; then
   clear
   banner
 fi
@@ -214,7 +214,7 @@ all_hosts=`mktemp -p $TMPDIR -t bing-ip2hosts.tmp.XXXXXX`
 
 while [ -z "$last_page_check" ] && [ -n "$results_count" ] && [ -z "$single_page" ]; do
 
-  if [ $ANIMATION == 1 ]; then
+  if [ $QUIET == 0 ]; then
     echo -ne "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b"
     echo -en "[${animation: $(( $page % 4 )) :1}][ $IP | Scraping page $((page + 1)) | Results: $results_count | Found $uniq_hosts ]"
   fi
