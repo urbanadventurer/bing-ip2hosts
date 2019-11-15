@@ -25,9 +25,10 @@ VERSION=0.6
 TMP_DIR=/tmp
 QUIET=0
 OUTPUT_IP=0
-HTTP_PREFIX=0
+FIND_URLS=0
 IP=
 PREFIX=
+SUFFIX=
 DEBUG=0
 STOP_AFTER_PAGES=5
 LANG=en-us
@@ -89,7 +90,7 @@ function show_hosts() {
     echo
   fi
 
-  uniq_hosts=`cat "$all_hosts" | cut -d '/' -f 3 | tr '[:upper:]' '[:lower:]' | sort | uniq`
+  uniq_hosts=`cat "$all_hosts" | sort | uniq`
 
   if [[ $DEBUG == 0 ]]; then
     rm -f "$all_hosts"
@@ -99,19 +100,19 @@ function show_hosts() {
     PREFIX="$IP,"
   fi
 
-  if [[ $HTTP_PREFIX == 1 ]]; then
-    PREFIX="$PREFIX""http://"
+  if [[ $FIND_URLS == 1 ]]; then
+    SUFFIX="/"
   fi
 
   for h in `echo "$uniq_hosts"`
   do
-    echo "$PREFIX$h"
+    echo "$PREFIX$h$SUFFIX"
   done
 
   if [[ ! -z "$OUTPUT_FILE" ]]; then
     for h in `echo "$uniq_hosts"`
     do
-      echo "$PREFIX$h" >> "$OUTPUTFILE"
+      echo "$PREFIX$h$SUFFIX" >> "$OUTPUTFILE"
     done
   fi
 
@@ -147,7 +148,7 @@ while getopts "o:m:qt:ip" optionName; do
     q) QUIET=1;;
     t) TMP_DIR="$OPTARG";;
     i) OUTPUT_IP=1;;
-    p) HTTP_PREFIX=1;;
+    p) FIND_URLS=1;;
 [?]) echo "Error"; exit 1;;
 esac
 done
@@ -233,9 +234,17 @@ while [[ -z "$last_page_check" ]] && [[ -n "$results_count" ]] && [[ -z "$single
   # no captcha support or detection
   # pages will contain "Typing the characters in the picture above helps us ensure that a person, not a program, is performing a search"
 
-  vhosts=`cat "$out"| egrep -o "<h2><a href=\"[^\"]+" $out |cut -d '"' -f 2`
+  results=`cat "$out"| egrep -o "<h2><a href=\"[^\"]+" $out | cut -d '"' -f 2`
+
+  if [[ $FIND_URLS == 1 ]]; then
+    vhosts=`echo "$results" | cut -d '/' -f 1-3 | tr '[:upper:]' '[:lower:]'`
+  else
+    vhosts=`echo "$results" | cut -d '/' -f 3 | tr '[:upper:]' '[:lower:]'`
+  fi
+  echo -e "$vhosts" >> "$all_hosts"
+
   old_uniq_hosts=$uniq_hosts
-  uniq_hosts=`cat "$all_hosts" | cut -d '/' -f 3 | tr '[:upper:]' '[:lower:]' | sort | uniq | wc -l`
+  uniq_hosts=`cat "$all_hosts" | sort | uniq | wc -l`
 
   if [[ "$DEBUG" == 1 ]]; then
     echo
@@ -253,8 +262,6 @@ while [[ -z "$last_page_check" ]] && [[ -n "$results_count" ]] && [[ -z "$single
     echo "[debug] Found $new_results new results"
     echo "[debug] scrape_results array ${scrape_results[@]}"
   fi
-
-  echo -e "$vhosts" >> "$all_hosts"
 
   # how many new results did we get
   new_results=$(( uniq_hosts - old_uniq_hosts ))
