@@ -1,3 +1,7 @@
+Version 0.3
+* Updated the progress animation with results found, and the current page being searched
+* Updated scraper to use the main bing.com site as the mobile bing site changed how it showed results
+* Updated usage info
 
 Version 0.2
 * You can enter a hostname not just an IP, eg. bing-ip2hosts foo.com

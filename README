@@ -1,6 +1,6 @@
 INTRODUCTION
 ------------
-Bing.com is a search engine owned by Microsoft formerly known as MSN Search and Live Search. It has a unique feature to search for websites hosted on a specific IP address. This feature is can be used with the IP: parameter in the search query, eg. "IP:1.2.3.4"
+Bing.com is a search engine owned by Microsoft, formerly known as MSN Search and Live Search. It has a unique feature to search for websites hosted on a specific IP address. This feature is can be used with the IP: parameter in the search query, eg. "IP:1.2.3.4"
 
 Bing-ip2hosts uses this feature to enumerate all hostnames which Bing has indexed for a specific IP address. This technique is considered best practice during the reconnaissance phase of a penetration test in order to discover a larger potential attack surface. Bing-ip2hosts is written in the Bash scripting language for Linux.
 
@@ -8,20 +8,21 @@ HELP
 -------
 Use the following command for usage information.
 
-$ ./bing-ip2hosts 
-Usage: ./bing-ip2hosts [OPTIONS] <IP|hostname>
-bing-ip2hosts (0.2) by Andrew Horton aka urbanadventurer, MorningStarSecurity
+bing-ip2hosts (0.3) by Andrew Horton aka urbanadventurer
 Homepage: http://www.morningstarsecurity.com/research/bing-ip2hosts
 
-Enumerate hostnames from Bing.com for an IP address.
-Bing.com is Microsoft's search engine which has an IP: search parameter.
-You can enter an IP or a hostname that will be resolved to an IP.
+Find hostnames that share an IP address with your target which can be a hostname or
+an IP address.  This makes use of Microsoft Bing.com ability to seach by IP address, 
+e.g. "IP:210.48.71.196".
+
+Usage: ./bing-ip2hosts [OPTIONS] <IP|hostname>
 
 OPTIONS are:
 -n		Turn off the progress indicator animation
 -t <DIR>	Use this directory instead of /tmp. The directory must exist.
 -i		Optional CSV output. Outputs the IP and hostname on each line, separated by a comma.
 -p		Optional http:// prefix output. Useful for right-clicking in the shell.
+
 
 
 
@@ -34,7 +35,7 @@ LIMITATIONS
 -----------
 * Doesn't check for a non existant TMP folder
 * The optional prefix of http:// is not from bing results so the site may actually be an https:// site.
-
+* Will stop scraping pages when a captcha is presented by Bing
 
 Homepage: http://www.morningstarsecurity.com/research/bing-ip2hosts/
 
