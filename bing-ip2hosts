@@ -41,7 +41,7 @@ function ctrl_c() {
   if [ $DEBUG = 0 ]; then
     rm -f "$out"
   fi
-  
+
   show_hosts
   exit 1
 }
@@ -155,7 +155,7 @@ done
 shift $(($OPTIND -1))
 
 if [ -z "$1" ]; then
-  echo "need an IP or hostname"
+  echo "Missing IP address or hostname." >&2
   exit 1
 fi
 
@@ -163,7 +163,7 @@ fi
 if [ ! -z "$OUTPUTFILE" ]; then
   touch "$OUTPUTFILE"
   if [ ! -w "$OUTPUTFILE" ]; then
-    echo "Cannot write to $OUTPUTFILE"
+    echo "Cannot write to $OUTPUTFILE." >&2
     exit 1
   fi
 fi
@@ -176,7 +176,7 @@ if [ ! -d "$TMPDIR" ]; then
     mkdir -p "$TMPDIR"
   fi
   if [ ! "$?" = 0 ]; then
-    echo "Aborting. Invalid TMP Directory: $TMPDIR"
+    echo "Invalid TMP Directory: $TMPDIR." >&2
     exit 1
   fi
 fi
@@ -202,13 +202,13 @@ for ((i = 0; i < (($STOPAFTERPAGES-1)); i++)); do stopsequence+=" 0"; done
 if [ `echo "$1" | egrep  "(([0-9]+\.){3}[0-9]+)|\[[a-f0-9:]+\]"`  ]; then
   IP="$1"
 else
-# IP=`resolveip -s "$1"`
-IP=`nslookup "$1" | egrep "^Address: \w+\.\w+\.\w+\.\w+$" | tail -1 | awk '{ print $2 }'`
-#  dig -t a treshna.com  +short
-if [ "$IP" = "" ]; then
-  echo "Error: cannot resolve $1 to an IP"
-  exit
-fi
+  # IP=`resolveip -s "$1"`
+  IP=`nslookup "$1" | egrep "^Address: \w+\.\w+\.\w+\.\w+$" | tail -1 | awk '{ print $2 }'`
+  #  dig -t a treshna.com  +short
+  if [ "$IP" = "" ]; then
+    echo "Cannot resolve $1 to an IP" >&2
+    exit 1
+  fi
 fi
 
 all_hosts=`mktemp -p $TMPDIR -t bing-ip2hosts.tmp.XXXXXX`
@@ -261,8 +261,7 @@ while [ -z "$last_page_check" ] && [ -n "$results_count" ] && [ -z "$single_page
   scrape_results+=($new_results)
 
   if [[ ${scrape_results[@]} =~ $stopsequence ]]; then
-    echo
-    echo -e "$RStopping after $STOPAFTERPAGES without new results.$N"
+    echo -e "\n$RStopping after $STOPAFTERPAGES without new results.$N" >&2
     break
   fi
 
