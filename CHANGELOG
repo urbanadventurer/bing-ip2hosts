@@ -1,3 +1,6 @@
+Version 0.5
+* Fixed three misinterpreted HTML parsings that had broken version 0.4 -lh
+
 Version 0.4
 * Updated usage
 * Fixed tmp file issue where files weren't being deleted
