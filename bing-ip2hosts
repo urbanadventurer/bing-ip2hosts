@@ -112,7 +112,7 @@ function show_hosts() {
   if [[ ! -z "$OUTPUT_FILE" ]]; then
     for h in `echo "$uniq_hosts"`
     do
-      echo "$PREFIX$h$SUFFIX" >> "$OUTPUTFILE"
+      echo "$PREFIX$h$SUFFIX" >> "$OUTPUT_FILE"
     done
   fi
 
