@@ -1,3 +1,5 @@
+bingip2hosts is a Bing.com web scraper that discovers websites by IP address.
+
 INTRODUCTION
 ------------
 Bing.com is a search engine owned by Microsoft, formerly known as MSN Search and Live Search. It has a unique feature to search for websites hosted on a specific IP address. This feature is can be used with the IP: parameter in the search query, eg. "IP:1.2.3.4"
@@ -8,12 +10,10 @@ HELP
 -------
 Use the following command for usage information.
 
-bing-ip2hosts (o.4) by Andrew Horton aka urbanadventurer
-Homepage: http://www.morningstarsecurity.com/research/bing-ip2hosts
+bingip2hosts is a Bing.com web scraper that discovers websites by IP address.
+Use for web intelligence and attack-surface mapping of targets.
 
-Useful for web intelligence and attack surface mapping of vhosts during
-penetration tests. Find hostnames that share an IP address with your target 
-which can be a hostname or an IP address.  This makes use of Microsoft 
+Find hostnames that share an IP address with your target which can be a hostname or an IP address. This makes use of Microsoft 
 Bing.com ability to seach by IP address, e.g. "IP:210.48.71.196".
 
 Usage: ./bing-ip2hosts [OPTIONS] <IP|hostname>
@@ -23,8 +23,7 @@ OPTIONS are:
 -t <DIR>	Use this directory instead of /tmp. The directory must exist.
 -i		Optional CSV output. Outputs the IP and hostname on each line, separated by a comma.
 -p		Optional http:// prefix output. Useful for right-clicking in the shell.
-
-
+-m <NUM>	Stop after NUM scraped pages return no new results (Default: 5). 
 
 
 INSTALL

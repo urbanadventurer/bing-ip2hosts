@@ -5,18 +5,9 @@
 # By Andrew Horton aka urbanadventurer, MorningStar Security
 # Homepage: http://www.morningstarsecurity.com/research/bing-ip2hosts
 #
-# Maintained by loophole / lh (lh@hhp-programming.net)
-# Homepage: http://HAX.GS
-#
-# Version 0.5 Released October 7th, 2015. Fixed misinterpreted HTML parsings that broke the script
-# Version 0.4 Released December 19th, 2013. Updated to use nslookup, new usage, fixed tmp file issue
-# Version 0.3 Released September 21st, 2012. Updated because Bing mobile search changed
-# Version 0.2 Released April 2nd, 2010
-# Version 0.1 Released December 2nd, 2009 at Kiwicon III in New Zealand
-#
 # License: GPLv3
 
-VERSION=0.5
+VERSION=0.6
 TMPDIR=/tmp
 ANIMATION=1
 OUTPUTIP=0
@@ -24,128 +15,248 @@ HTTPPREFIX=0
 IP=
 PREFIX=
 DEBUG=0
+STOPAFTERPAGES=5
+LANG=en-us
+
+trap ctrl_c INT
+
+function ctrl_c() {
+  echo -e "\n* ^C"
+  show_hosts
+  exit 1
+}
+
+
+function banner() {
+
+N="\e[0m"  #NORMAL
+G="\e[32m" #GREEN
+W="\e[97m" #WHITE
+R="\e[31m" #RED
+
+
+BANNER="
+$G  m,                $N   .,recon:,        ,,
+$G  #####             $N  ]##\"\"^^\"%##m    %##b
+$G  ####b             $N  ]##      \`##b
+$G  ####b             $N  ]##       ##    i##    @#b,######m       ,######m ##b
+$G  ####b 1mw,        $N  ]##MMM####      i##    ]###\`    %##     ###\`    \`@##
+$G  ####b  1#####Nw,  $N  ]##\`\`    @#b    i##    ]##       ###   ###       j##
+$G  ####i   %########[$N  ]##       @##   i##    ]##       ###   ##g       j##
+$G  ####n      2#####[$N  ]##      @##    i##    ]##       ###   @##       {##
+$G  ####g  ,#########b$N  ]##   ,,e###    j##    ]##       ###    7##m,,,s#M##
+$G  #############M^   $N  'WWWWWW%b^       ii    'nn       nn*      \`1337\` g##
+$G  ##########\"      $N                                                    G##
+$G    \"%##\"         $N                                            @#Gmmem###G
+  ,i             $G   ,s2e,    $N ##                                  \`\`\`\`
+   \`            $G   \"\`   %#$N    ##                             T#
+  ]#   ]#,#M5@#p $G        #b  $N #H#H%@#     s#M5O#o   ,#MSSM  W@##W=  s#SSW
+  ]#   j#p    ^#p$G      ,#M   $N ##    @#   ##'   'O#  S#,      ]#     #b
+  ]#   j#      #M$G    ,#M     $N ##    @#   #o     O#    \"SXm   ]#      ^\"@#
+  ]#   j##,  ,## $G  ,#2       $N ##    @#   7#.   .#O  ,   ]#   ]#Q       ,#s
+  ]#   j######'  $G  #######x  $N ##    @#    s#####o    ####^    #Tt    ####^
+       j#
+$N       j#         $W bing-ip2hosts ($VERSION) by Andrew Horton @urbanadventurer
+$N       j#         $W https://morningstarsecurity.com/research/bing-ip2hosts
+$N                  $W https://github.com/urbanadventurer/bing-ip2hosts$N
+"
+
+echo -e "$BANNER"
+}
+
+function show_hosts() {
+  if [ $ANIMATION == 1 ]; then
+    echo
+  fi
+
+  uniq_hosts=`cat "$all_hosts" | cut -d '/' -f 3 | tr '[:upper:]' '[:lower:]' | sort | uniq`
+
+  if [ $DEBUG -eq 0 ]; then
+    rm -f "$all_hosts"
+  fi
+
+  if [ $OUTPUTIP == 1 ]; then
+    PREFIX="$IP,"
+  fi
+
+  if [ $HTTPPREFIX == 1 ]; then
+    PREFIX="$PREFIX""http://"
+  fi
+
+  for h in `echo "$uniq_hosts"`
+  do
+    echo "$PREFIX$h"
+  done
+
+  if [ ! -z "$OUTPUTFILE" ]; then
+    for h in `echo "$uniq_hosts"`
+    do
+      echo "$PREFIX$h" >> "$OUTPUTFILE"
+    done
+  fi
+
+}
+
+# To use proxy set environment variables, http_proxy and https_proxy
+echo $http_proxy
+
+#wget  http://bing.com/
+
+# setmkt=en-us&setlang=en-us
+# gives different results
+
+
+# https://docs.microsoft.com/en-us/rest/api/cognitiveservices-bingsearch/bing-web-api-v5-reference#market-codes
+# setmkt=en-US limits results
+
+#exit
 
 if [ -z "$1" ] || [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
-echo -en '\E[31m'
-echo -e "bing-ip2hosts ($VERSION) by Andrew Horton aka urbanadventurer, maintained by loophole
-Homepage: http://HAX.GS
-"
-echo -en '\033[0m'
+clear
+banner
 
-echo -e "Useful for web intelligence and attack surface mapping of vhosts during
-penetration tests. Find hostnames that share an IP address with your target 
-which can be a hostname or an IP address.  This makes use of Microsoft 
-Bing.com ability to seach by IP address, e.g. \"IP:210.48.71.196\".
+
+echo -e "bing-ip2hosts is a Bing.com web scraper that discovers websites by IP address.
+Use for OSINT and discovering attack-surface of penetration test targets.
+
+Find hostnames that share an IP address with your target which can be a hostname or an IP address.
+This uses the Bing.com feature of seaching by IP address, e.g. \"IP:40.112.72.205\".
 
 Usage: $0 [OPTIONS] <IP|hostname>
 
 OPTIONS are:
--n\t\tTurn off the progress indicator animation
--t <DIR>\tUse this directory instead of /tmp. The directory must exist.
+-o <FILE>\tOutput hostnames to FILE.
+-n\t\tTurn off colour and animations.
+-t <DIR>\tUse this directory instead of /tmp.
 -i\t\tOptional CSV output. Outputs the IP and hostname on each line, separated by a comma.
 -p\t\tOptional http:// prefix output. Useful for right-clicking in the shell.
+-m <NUM>\tStop after NUM scraped pages return no new results (Default: $STOPAFTERPAGES). 
 "
 exit 1
 fi
 
-while getopts "nipt:" optionName; do
-    case "$optionName" in
-     	 n) ANIMATION=0;;
-	 t) TMPDIR="$OPTARG";;
-	 i) OUTPUTIP=1;;
-	 p) HTTPPREFIX=1;;
-	 [?]) echo "Error"; exit 1;;
-    esac
+while getopts "nipt:m:o:" optionName; do
+  case "$optionName" in
+    n) ANIMATION=0;;
+    t) TMPDIR="$OPTARG";;
+    i) OUTPUTIP=1;;
+    p) HTTPPREFIX=1;;
+    m) STOPAFTERPAGES=$OPTARG;;
+    o) OUTPUTFILE=$OPTARG;;
+[?]) echo "Error"; exit 1;;
+esac
 done
 
 shift $(($OPTIND -1))
 
 if [ -z "$1" ]; then
- echo "need an IP or hostname"
- exit 1
+  echo "need an IP or hostname"
+  exit 1
+fi
+################
+
+# initialize outputfile
+if [ ! -z "$OUTPUTFILE" ]; then
+  touch "$OUTPUTFILE"
+  if [ ! -w "$OUTPUTFILE" ]; then
+    echo "Cannot write to $OUTPUTFILE"
+    exit 1
+  fi
+fi
+
+# create TMPDIR
+
+if [ $ANIMATION == 1 ]; then
+  clear
+  banner
 fi
 
 animation="/-\|"
 page=0
 last_page_check=
-how_many=1
+results_count=1
 uniq_hosts=0
 single_page=
+results_removed=
+declare -a scrape_results
+
+stopsequence="0"
+for ((i = 0; i < (($STOPAFTERPAGES-1)); i++)); do stopsequence+=" 0"; done
 
 # if the parameter looks like an IP go ahead, otherwise resolve it
 if [ `echo "$1" | egrep  "(([0-9]+\.){3}[0-9]+)|\[[a-f0-9:]+\]"`  ]; then
- IP="$1"
+  IP="$1"
 else
- IP=`nslookup "$1" |egrep "^Address: \w+\.\w+\.\w+\.\w+$"|tail -1|awk '{ print $2 }'`
- if [ "$IP" == "" ]; then
- 	echo "Error: cannot resolve $1 to an IP"
-	exit
- fi
+# IP=`resolveip -s "$1"`
+IP=`nslookup "$1" | egrep "^Address: \w+\.\w+\.\w+\.\w+$" | tail -1 | awk '{ print $2 }'`
+#  dig -t a treshna.com  +short
+if [ "$IP" == "" ]; then
+  echo "Error: cannot resolve $1 to an IP"
+  exit
+fi
 fi
 
 all_hosts=`mktemp -p $TMPDIR -t bing-ip2hosts.tmp.XXXXXX`
 
-while [ -z "$last_page_check" ] && [ -n "$how_many" ] && [ -z "$single_page" ]; do
- if [ $ANIMATION == 1 ]; then
-	printf '\b%.0s' {1..100}
-	echo -en "[ $IP | Scraping $how_many | Found $uniq_hosts | ${animation: $(( $page % 4 )) :1} ]"
- fi
- url="http://www.bing.com/search?q=ip%3A$IP&go=&qs=n&first=${page}0&FORM=PERE"
+while [ -z "$last_page_check" ] && [ -n "$results_count" ] && [ -z "$single_page" ]; do
 
- out=`mktemp -p "$TMPDIR" -t bing-ip2hosts.tmp.XXXXXX`
- wget -q -O "$out" "$url"
+  if [ $ANIMATION == 1 ]; then
+    echo -ne "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b"
+    echo -en "[${animation: $(( $page % 4 )) :1}][ $IP | Scraping page $((page + 1)) | Results: $results_count | Found $uniq_hosts ]"
+  fi
 
- last_page_check=`egrep -o '<span class="sb_count">[0-9]+-([0-9]+) of (\1)' $out`
- if [ "$DEBUG" -eq 1 ]; then
-  echo "Last Page Check: $last_page_check"
- fi
+  url="https://www.bing.com/search?q=ip%3A$IP+.&qs=n&first=${page}0&FORM=PERE&setlang=$LANG"
+  out=`mktemp -p "$TMPDIR" -t bing-ip2hosts.tmp.XXXXXX`
 
- # if no results are found, how_many is empty and the loop will exit
- how_many=`egrep -o '<span class="sb_count">[^<]+' $out|cut -d '>' -f 2|cut -d ' ' -f 1-3`
+  wget --quiet --no-check-certificate --output-document "$out" "$url"
 
- # check for a single page of results
- single_page=`egrep -o '<span class="sb_count">[0-9] results' $out`
- if [ $DEBUG -eq 1 ];then
-  echo "Single Page: $single_page"
- fi
+  last_page_check=`egrep -o '<span class="sb_count">[0-9]+-([0-9]+) of (\1) results' $out`
+  results_count=`egrep -o '<span class="sb_count">[^<]+' $out|cut -d '>' -f 2|cut -d ' ' -f 1-3`
+  single_page=`egrep -o '<span class="sb_count">[0-9] results' $out`
+  results_removed=`egrep -o '>Some results have been removed<' $out`
 
- # no captcha support or detection
- # pages will contain "Typing the characters in the picture above helps us ensure that a person, not a program, is performing a search"
+  # no captcha support or detection
+  # pages will contain "Typing the characters in the picture above helps us ensure that a person, not a program, is performing a search"
 
- vhosts=`cat "$out"| egrep -o "<h2><a href=\"[^\"]+" $out |cut -d '"' -f 2`
- echo -e "$vhosts" >> "$all_hosts"
+  vhosts=`cat "$out"| egrep -o "<h2><a href=\"[^\"]+" $out |cut -d '"' -f 2`
+  old_uniq_hosts=$uniq_hosts
+  uniq_hosts=`cat "$all_hosts" | cut -d '/' -f 3 | tr '[:upper:]' '[:lower:]' | sort | uniq | wc -l`
 
- uniq_hosts=`cat "$all_hosts" | cut -d '/' -f 3 | tr '[:upper:]' '[:lower:]' | sort | uniq | wc -l`
+  if [ "$DEBUG" -eq 1 ]; then
+    echo
+    echo "[debug] Page: $page"
+    echo
+    echo "Results page checks:"
+    echo "[debug] Results Count: $results_count"
+    echo "[debug] Last Page: $last_page_check"
+    echo "[debug] Single Page: $single_page"
+    echo "[debug] Results Removed: $results_removed"
 
- if [ $DEBUG -eq 0 ]; then
-  rm -f "$out"
- fi
- 
- let page=$page+1 
- if [ $DEBUG -eq 1 ]; then
-  echo "Page: $page"
- fi
+    echo "Counting results:"
+    echo "[debug] uniq_hosts = $uniq_hosts"
+    echo "[debug] old_uniq_hosts = $old_uniq_hosts"
+    echo "[debug] Found $new_results new results"
+    echo "[debug] scrape_results array ${scrape_results[@]}"
+  fi
+
+  echo -e "$vhosts" >> "$all_hosts"
+
+  # how many new results did we get
+  new_results=$(( uniq_hosts - old_uniq_hosts ))
+  scrape_results+=($new_results)
+
+  if [[ ${scrape_results[@]} =~ $stopsequence ]]; then
+    echo
+    echo -e "$RStopping after $STOPAFTERPAGES without new results.$N"
+    break
+  fi
+
+  # clean up tmp files
+  if [ $DEBUG -eq 0 ]; then
+    rm -f "$out"
+  fi
+
+  let page=$page+1
 done
 
-if [ $ANIMATION == 1 ]; then
-	echo
-fi
-
-uniq_hosts=`cat "$all_hosts" | cut -d '/' -f 3 | tr '[:upper:]' '[:lower:]' | sort | uniq`
-
-if [ $DEBUG -eq 0 ]; then
-  rm -f "$all_hosts"
-fi
-
-if [ $OUTPUTIP == 1 ]; then
-	PREFIX="$IP,"
-fi
-if [ $HTTPPREFIX == 1 ]; then
-	PREFIX="$PREFIX""http://"
-fi
-
-for h in `echo "$uniq_hosts"`
-do
-	echo "$PREFIX$h"
-done
-
+show_hosts
