@@ -43,3 +43,4 @@ LIMITATIONS
 
 Homepage: http://www.morningstarsecurity.com/research/bing-ip2hosts/
 Source: https://github.com/urbanadventurer/bing-ip2hosts
+Kali Linux Tools: https://tools.kali.org/information-gathering/bing-ip2hosts
