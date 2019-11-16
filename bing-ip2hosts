@@ -328,21 +328,21 @@ while true; do
   fi
 
   # check end conditions
-  if [[ ! -z "$last_page_check" ]]; then
+  if [[ -n "$last_page_check" ]]; then
     if [[ $QUIET == 0 ]]; then
       echo -e "\n${R}Stopping. This is the last page of results." >&2
     fi
     break
   fi
 
-  if [[ ! -n "$results_count" ]]; then
+  if [[ -z "$results_count" ]]; then
     if [[ $QUIET == 0 ]]; then
       echo -e "\n${R}Stopping. The search results count is missing." >&2
     fi
     break
   fi
 
-  if [[ ! -z "$single_page" ]]; then
+  if [[ -n "$single_page" ]]; then
     if [[ $QUIET == 0 ]]; then
       echo -e "\n${R}Stopping. Returned only one page of results." >&2
     fi
