@@ -214,18 +214,18 @@ fi
 
 # Create TMP_DIR if necessary
 if [[ ! -d "$TMP_DIR" ]]; then
-  if [[ "$QUIET" = 0 ]]; then
+  if [[ "$QUIET" == 0 ]]; then
     mkdir -v -p "$TMP_DIR"
   else
     mkdir -p "$TMP_DIR"
   fi
-  if [[ ! "$?" = 0 ]]; then
+  if [[ ! "$?" == 0 ]]; then
     echo "Invalid TMP Directory: $TMP_DIR." >&2
     exit 1
   fi
 fi
 
-if [[ $QUIET = 0 ]]; then
+if [[ $QUIET == 0 ]]; then
   clear
 #  banner
 fi
