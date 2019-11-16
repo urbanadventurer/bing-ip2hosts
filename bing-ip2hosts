@@ -96,7 +96,7 @@ $G  ####b             $DG | $N Scraped pages: $page
 $G  ####b 1mw,        $DG | $N 
 $G  ####b  1#####Nw,  $DG | $N Page Title   : $page_title
 $G  ####i   %########[$DG | $N Results      : $results_count
-$G  ####n      2#####[$DG | $N Results Page : $results_highlighted_page
+$G  ####n      2#####[$DG | $N Pagination   : $results_highlighted_page
 $G  ####g  ,#########b$DG | $N New          : $new_results new
 $G  #############M^   $DG | $N   
 $G  ##########\"       $DG | $N $extra_status_update
