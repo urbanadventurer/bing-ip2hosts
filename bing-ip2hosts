@@ -80,8 +80,7 @@ $G    \"%##\"         $N                                            @#Gmmem###G
        j#
 $N       j#         $W bing-ip2hosts ($VERSION) by Andrew Horton @urbanadventurer
 $N       j#         $W https://morningstarsecurity.com/research/bing-ip2hosts
-$N                  $W https://github.com/urbanadventurer/bing-ip2hosts$N
-"
+$N                  $W https://github.com/urbanadventurer/bing-ip2hosts$N"
 
 echo -e "$BANNER"
 }
@@ -164,10 +163,16 @@ function repeat_zero() {
   echo "$str"
 }
 
-
-if [[ -z "$1" ]] || [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
+function usage()
+{
 clear
 banner
+
+if [[ $(tput lines) == "24" ]]; then
+  # show the banner only in an 80x24 default terminal
+  echo -n "[Press Enter]"
+  read
+fi
 
 echo -e "bing-ip2hosts is a Bing.com web scraper that discovers websites by IP address.
 Use for OSINT and discovering attack-surface of penetration test targets.
@@ -188,6 +193,11 @@ OPTIONS are:
 -t DIR\tUse this directory instead of /tmp.
 "
 exit 1
+}
+
+
+if [[ -z "$1" ]] || [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
+  usage
 fi
 
 while getopts "o:n:l:m:ucqt:" optionName; do
