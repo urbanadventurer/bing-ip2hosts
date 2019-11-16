@@ -37,10 +37,11 @@ INSTALL
 sudo cp ./bing-ip2hosts /usr/local/bin/
 
 
-LIMITATIONS
------------
-* Will stop scraping pages when a captcha is presented by Bing
+KNOWN ISSUES
+------------
+* Will stop scraping pages when a CAPTCHA is presented by Bing
 
-Homepage: http://www.morningstarsecurity.com/research/bing-ip2hosts/
-Source: https://github.com/urbanadventurer/bing-ip2hosts
-Kali Linux Tools: https://tools.kali.org/information-gathering/bing-ip2hosts
+
+- Homepage: http://www.morningstarsecurity.com/research/bing-ip2hosts/
+- Source: https://github.com/urbanadventurer/bing-ip2hosts
+- Kali Linux Tools: https://tools.kali.org/information-gathering/bing-ip2hosts
