@@ -172,6 +172,8 @@ if [[ $(tput lines) == "24" ]]; then
   # show the banner only in an 80x24 default terminal
   echo -n "[Press Enter]"
   read
+else
+  echo
 fi
 
 echo -e "bing-ip2hosts is a Bing.com web scraper that discovers websites by IP address.
