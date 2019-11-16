@@ -257,14 +257,7 @@ fi
 
 all_hosts=`mktemp -p $TMP_DIR -t bing-ip2hosts.tmp.XXXXXX`
 
-while [[ -z "$last_page_check" ]] && [[ -n "$results_count" ]] && [[ -z "$single_page" ]]; do
-
-  if [[ $QUIET == 0 ]]; then
-  #  echo -ne "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b"
-  #  echo -en "[${animation: $(( $page % 4 )) :1}][ $IP | Scraping page $((page + 1)) | Results: $results_count | Found $uniq_hosts ]          "
-
-    display_progress
-  fi
+while true; do
 
   url="https://www.bing.com/search?q=ip%3A$IP+.&qs=n&first=${page}0&FORM=PERE&setlang=$BING_SETLANG&setmkt=$BING_SETMKT"
   urlpath=`echo "$url" | cut -d '/' -f 4-`
@@ -294,7 +287,6 @@ while [[ -z "$last_page_check" ]] && [[ -n "$results_count" ]] && [[ -z "$single
   fi
   echo -e "$vhosts" >> "$all_hosts"
 
-
   old_uniq_hosts=$uniq_hosts
   uniq_hosts=`cat "$all_hosts" | sort | uniq | wc -l`
 
@@ -318,6 +310,35 @@ while [[ -z "$last_page_check" ]] && [[ -n "$results_count" ]] && [[ -z "$single
   # how many new results did we get
   new_results=$(( uniq_hosts - old_uniq_hosts ))
   scrape_results+=($new_results)
+
+
+  if [[ $QUIET == 0 ]]; then
+  #  echo -ne "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b"
+  #  echo -en "[${animation: $(( $page % 4 )) :1}][ $IP | Scraping page $((page + 1)) | Results: $results_count | Found $uniq_hosts ]          "
+    display_progress
+  fi
+  
+  # check end conditions
+  if [[ ! -z "$last_page_check" ]]; then
+    if [[ $QUIET == 0 ]]; then
+      echo -e "\n${R}Stopping. This is the last page of results." >&2
+    fi
+    break
+  fi
+
+  if [[ ! -n "$results_count" ]]; then
+    if [[ $QUIET == 0 ]]; then
+      echo -e "\n${R}Stopping. The search results count is missing." >&2
+    fi
+    break
+  fi
+
+  if [[ ! -z "$single_page" ]]; then
+    if [[ $QUIET == 0 ]]; then
+      echo -e "\n${R}Stopping. Returned only one page of results." >&2
+    fi
+    break
+  fi
 
   if [[ ${scrape_results[@]} =~ $stop_sequence ]]; then
     if [[ $QUIET == 0 ]]; then
