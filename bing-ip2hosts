@@ -237,9 +237,9 @@ if [[ $QUIET == 0 ]]; then
   clear
 fi
 
-page=0
+page=1
 last_page_check=
-results_count=1
+results_count=
 uniq_hosts=0
 single_page=
 results_removed=
@@ -260,9 +260,10 @@ fi
 
 f_results=$(mktemp -p "$TMP_DIR" -t bing-ip2hosts.tmp.XXXXXX)
 
-while true; do
 
-  url="https://www.bing.com/search?q=ip%3A$IP+.&qs=n&first=${page}0&FORM=PERE&setlang=$BING_SETLANG&setmkt=$BING_SETMKT"
+
+while true; do
+  url="https://www.bing.com/search?q=ip%3A$IP+.&qs=n&first=$((page-1))0&FORM=PERE&setlang=$BING_SETLANG&setmkt=$BING_SETMKT"
   urlpath=$(echo "$url" | cut -d '/' -f 4-)
 
   f_scraped_html=$(mktemp -p "$TMP_DIR" -t bing-ip2hosts.tmp.XXXXXX)
