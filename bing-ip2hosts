@@ -97,10 +97,10 @@ $G  ####b             $DG | $N Scraped pages: $page
 $G  ####b 1mw,        $DG | $N 
 $G  ####b  1#####Nw,  $DG | $N Page Title   : $page_title
 $G  ####i   %########[$DG | $N Results      : $results_count
-$G  ####n      2#####[$DG | $N Paginated    : $results_highlighted_page
+$G  ####n      2#####[$DG | $N Results Page : $results_highlighted_page
 $G  ####g  ,#########b$DG | $N New          : $new_results new
 $G  #############M^   $DG | $N   
-$G  ##########\"       $DG | $N   
+$G  ##########\"       $DG | $N $extra_status_update
 $G    \"%##\"           $DG | $N CTRL-C to stop
 
 ${N}[ ] /$urlpath"
@@ -236,6 +236,7 @@ results_count=1
 uniq_hosts=0
 single_page=
 results_removed=
+extra_status_update=
 declare -a scrape_results
 
 stop_sequence="0"
@@ -310,10 +311,15 @@ while true; do
   new_results=$(( uniq_hosts - old_uniq_hosts ))
   scrape_results+=($new_results)
 
-
   if [[ $QUIET == 0 ]]; then
   #  echo -ne "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b"
   #  echo -en "[${animation: $(( $page % 4 )) :1}][ $IP | Scraping page $((page + 1)) | Results: $results_count | Found $uniq_hosts ]          "
+  
+    extra_status_update=""
+    if [ -n "$results_removed" ]; then
+      extra_status_update="${R}Some results have been removed"
+    fi
+
     display_progress
   fi
 
