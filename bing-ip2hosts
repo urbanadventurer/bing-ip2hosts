@@ -111,7 +111,7 @@ clear
 echo -e "$PROGRESS"
 echo -e "${B}$vhosts${N}"
 
-x=$(($page % 8))
+x=$((page % 8))
 tput cup 13 1
 echo -e "$DR${progress_animation:$x:1}"
 tput cup 24 0
@@ -126,8 +126,8 @@ function show_hosts() {
     echo -e "$N"
   fi
 
-  uniq_hosts=`cat "$f_results" | sort | uniq`
-  count_uniq_hosts=`cat "$f_results" | sort | uniq | wc -l`
+  uniq_hosts=$(sort < "$f_results" | uniq)
+  count_uniq_hosts=$(sort < "$f_results" | uniq | wc -l)
   echo "Found $count_uniq_hosts after scraping $page pages."
   echo
 
@@ -143,13 +143,13 @@ function show_hosts() {
     suffix="/"
   fi
 
-  for h in `echo "$uniq_hosts"`
+  for h in $uniq_hosts
   do
     echo "$PREFIX$h$suffix"
   done
 
-  if [[ ! -z "$OUTPUT_FILE" ]]; then
-    for h in `echo "$uniq_hosts"`
+  if [[ -n "$OUTPUT_FILE" ]]; then
+    for h in $uniq_hosts
     do
       echo "$PREFIX$h$suffix" >> "$OUTPUT_FILE"
     done
@@ -160,7 +160,7 @@ function show_hosts() {
 function repeat_zero() {
   how_many="$1"
   local str="0"
-  for ((i = 0; i < (($how_many-1)); i++)); do str+=" 0"; done
+  for ((i = 0; i < ((how_many-1)); i++)); do str+=" 0"; done
   echo "$str"
 }
 
@@ -204,7 +204,7 @@ while getopts "o:n:l:m:uiqt:" optionName; do
 esac
 done
 
-shift $(($OPTIND -1))
+shift $((OPTIND -1))
 
 if [[ -z "$1" ]]; then
   echo "Missing IP address or hostname." >&2
@@ -212,7 +212,7 @@ if [[ -z "$1" ]]; then
 fi
 
 # initialize outputfile
-if [[ ! -z "$OUTPUT_FILE" ]]; then
+if [[ -n "$OUTPUT_FILE" ]]; then
   touch "$OUTPUT_FILE"
   if [[ ! -w "$OUTPUT_FILE" ]]; then
     echo "Cannot write to $OUTPUT_FILE." >&2
@@ -245,52 +245,52 @@ single_page=
 results_removed=
 extra_status_update=
 declare -a scrape_results
-stop_sequence=$(repeat_zero $STOP_AFTER_PAGES)
+stop_sequence=$(repeat_zero "$STOP_AFTER_PAGES")
 
 # if the parameter looks like an IP go ahead, otherwise resolve it
 if [[ "$1" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   IP="$1"
 else
-  IP=`nslookup "$1" | egrep "^Address: \w+\.\w+\.\w+\.\w+$" | tail -1 | awk '{ print $2 }'`
+  IP=$(nslookup "$1" | grep -E "^Address: \w+\.\w+\.\w+\.\w+$" | tail -1 | awk '{ print $2 }')
   if [ "$IP" == "" ]; then
     echo "Cannot resolve $1 to an IP address." >&2
     exit 1
   fi
 fi
 
-f_results=`mktemp -p $TMP_DIR -t bing-ip2hosts.tmp.XXXXXX`
+f_results=$(mktemp -p "$TMP_DIR" -t bing-ip2hosts.tmp.XXXXXX)
 
 while true; do
 
   url="https://www.bing.com/search?q=ip%3A$IP+.&qs=n&first=${page}0&FORM=PERE&setlang=$BING_SETLANG&setmkt=$BING_SETMKT"
-  urlpath=`echo "$url" | cut -d '/' -f 4-`
+  urlpath=$(echo "$url" | cut -d '/' -f 4-)
 
-  f_scraped_html=`mktemp -p "$TMP_DIR" -t bing-ip2hosts.tmp.XXXXXX`
+  f_scraped_html=$(mktemp -p "$TMP_DIR" -t bing-ip2hosts.tmp.XXXXXX)
   if ! wget --quiet --no-check-certificate --output-document "$f_scraped_html" "$url"; then
     echo -e "\n${R}wget failed to scrape $url" >&2
     exit 1
   fi
 
-  last_page_check=`egrep -o '<span class="sb_count">[0-9]+-([0-9]+) of (\1) results' $f_scraped_html`
-  results_count=`egrep -o '<span class="sb_count">[^<]+' $f_scraped_html|cut -d '>' -f 2|cut -d ' ' -f 1-3`
-  single_page=`egrep -o '<span class="sb_count">[0-9] results' $f_scraped_html`
-  results_removed=`egrep -o '>Some results have been removed<' $f_scraped_html`
-  page_title=`egrep -o '<title>([^<]+)' $f_scraped_html | cut -d '>' -f 2`
-  results_highlighted_page=`egrep -o "class=\"sb_pagS sb_pagS_bp b_widePag sb_bp\">([0-9]+)" $f_scraped_html | cut -d '>' -f 2`
-  results=`egrep -o "<h2><a href=\"[^\"]+" $f_scraped_html | cut -d '"' -f 2`
+  last_page_check=$(grep -E -o '<span class="sb_count">[0-9]+-([0-9]+) of (\1) results' "$f_scraped_html")
+  results_count=$(grep -E -o '<span class="sb_count">[^<]+' "$f_scraped_html" |cut -d '>' -f 2|cut -d ' ' -f 1-3)
+  single_page=$(grep -E -o '<span class="sb_count">[0-9] results' "$f_scraped_html")
+  results_removed=$(grep -E -o '>Some results have been removed<' "$f_scraped_html")
+  page_title=$(grep -E -o '<title>([^<]+)' "$f_scraped_html" | cut -d '>' -f 2)
+  results_highlighted_page=$(grep -E -o "class=\"sb_pagS sb_pagS_bp b_widePag sb_bp\">([0-9]+)" "$f_scraped_html" | cut -d '>' -f 2)
+  results=$(grep -E -o "<h2><a href=\"[^\"]+" "$f_scraped_html" | cut -d '"' -f 2)
 
   # no captcha support or detection
   # pages will contain "Typing the characters in the picture above helps us ensure that a person, not a program, is performing a search"
 
   if [[ $DISPLAY_URL_PREFIX == 1 ]]; then
-    vhosts=`echo "$results" | cut -d '/' -f 1-3 | tr '[:upper:]' '[:lower:]'`
+    vhosts=$(echo "$results" | cut -d '/' -f 1-3 | tr '[:upper:]' '[:lower:]')
   else
-    vhosts=`echo "$results" | cut -d '/' -f 3 | tr '[:upper:]' '[:lower:]'`
+    vhosts=$(echo "$results" | cut -d '/' -f 3 | tr '[:upper:]' '[:lower:]')
   fi
   echo -e "$vhosts" >> "$f_results"
 
   old_uniq_hosts=$uniq_hosts
-  uniq_hosts=`cat "$f_results" | sort | uniq | wc -l`
+  uniq_hosts=$(sort < "$f_results"| uniq | wc -l)
 
   if [[ "$DEBUG" == 1 ]]; then
     echo
@@ -306,12 +306,12 @@ while true; do
     echo "[debug] uniq_hosts = $uniq_hosts"
     echo "[debug] old_uniq_hosts = $old_uniq_hosts"
     echo "[debug] Found $new_results new results"
-    echo "[debug] scrape_results array ${scrape_results[@]}"
+    echo "[debug] scrape_results array ${scrape_results[*]}"
   fi
 
   # how many new results did we get
   new_results=$(( uniq_hosts - old_uniq_hosts ))
-  scrape_results+=($new_results)
+  scrape_results+=("$new_results")
 
   if [[ $QUIET == 0 ]]; then
     extra_status_update=""
@@ -349,15 +349,14 @@ while true; do
     break
   fi
 
-  if [[ ${scrape_results[@]} =~ $stop_sequence ]]; then
+  if [[ ${scrape_results[*]} =~ $stop_sequence ]]; then
     if [[ $QUIET == 0 ]]; then
       echo -e "\n${R}Stopping after scraping $STOP_AFTER_PAGES pages without any new results.$N" >&2
     fi
-
     break
   fi
 
-  let page=$page+1
+  (( page += 1 ))
 done
 
 show_hosts
