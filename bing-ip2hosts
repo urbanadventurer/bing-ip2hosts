@@ -157,6 +157,13 @@ function show_hosts() {
   echo
 }
 
+function repeat_zero() {
+  how_many="$1"
+  local str="0"
+  for ((i = 0; i < (($how_many-1)); i++)); do str+=" 0"; done
+  echo "$str"
+}
+
 
 if [[ -z "$1" ]] || [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
 clear
@@ -239,9 +246,7 @@ single_page=
 results_removed=
 extra_status_update=
 declare -a scrape_results
-
-stop_sequence="0"
-for ((i = 0; i < (($STOP_AFTER_PAGES-1)); i++)); do stop_sequence+=" 0"; done
+stop_sequence=$(repeat_zero $STOP_AFTER_PAGES)
 
 # if the parameter looks like an IP go ahead, otherwise resolve it
 if [[ "$1" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
