@@ -20,7 +20,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 VERSION=0.6
 TMP_DIR=/tmp
 QUIET=0
@@ -82,7 +81,7 @@ $N       j#         $W bing-ip2hosts ($VERSION) by Andrew Horton @urbanadventure
 $N       j#         $W https://morningstarsecurity.com/research/bing-ip2hosts
 $N                  $W https://github.com/urbanadventurer/bing-ip2hosts$N"
 
-echo -e "$BANNER"
+  echo -e "$BANNER"
 }
 
 
@@ -103,18 +102,17 @@ $G    \"%##\"           $DG | $N CTRL-C to stop
 
 ${N}[ ] /$urlpath"
 
-#progress_animation="⣾⣽⣻⢿⡿⣟⣯⣷"
-progress_animation="▏▎▍▌▋▊▉▊▋▌▍▎"
+  #progress_animation="⣾⣽⣻⢿⡿⣟⣯⣷"
+  progress_animation="▏▎▍▌▋▊▉▊▋▌▍▎"
 
-clear
-echo -e "$PROGRESS"
-echo -e "${B}$vhosts${N}"
+  clear
+  echo -e "$PROGRESS"
+  echo -e "${B}$vhosts${N}"
 
-x=$((page % 8))
-tput cup 13 1
-echo -e "$DR${progress_animation:$x:1}"
-tput cup 24 0
-
+  x=$((page % 8))
+  tput cup 13 1
+  echo -e "$DR${progress_animation:$x:1}"
+  tput cup 24 0
 }
 
 function show_hosts() {
@@ -165,16 +163,16 @@ function repeat_zero() {
 
 function usage()
 {
-clear
-banner
+  clear
+  banner
 
-if [[ $(tput lines) == "24" ]]; then
-  # show the banner only in an 80x24 default terminal
-  echo -n "[Press Enter]"
-  read
-else
-  echo
-fi
+  if [[ $(tput lines) == "24" ]]; then
+    # show the banner only in an 80x24 default terminal
+    echo -n "[Press Enter]"
+    read
+  else
+    echo
+  fi
 
 echo -e "bing-ip2hosts is a Bing.com web scraper that discovers websites by IP address.
 Use for OSINT and discovering attack-surface of penetration test targets.
@@ -194,9 +192,8 @@ OPTIONS are:
 -q\tQuiet. Disable output except for final results.
 -t DIR\tUse this directory instead of /tmp.
 "
-exit 1
+  exit 1
 }
-
 
 if [[ -z "$1" ]] || [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
   usage
@@ -271,8 +268,6 @@ else
 fi
 
 f_results=$(mktemp -p "$TMP_DIR" -t bing-ip2hosts.tmp.XXXXXX)
-
-
 
 while true; do
   url="https://www.bing.com/search?q=ip%3A$IP+.&qs=n&first=$((page-1))0&FORM=PERE&setlang=$BING_SETLANG&setmkt=$BING_SETMKT"
