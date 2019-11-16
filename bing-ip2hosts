@@ -154,6 +154,141 @@ function show_hosts() {
   echo
 }
 
+function validate_target(){
+  # if the parameter looks like an IP go ahead, otherwise resolve it
+  if [[ "$1" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    ret="$1"
+  else
+    ret=$(nslookup "$1" | grep -E "^Address: \w+\.\w+\.\w+\.\w+$" | tail -1 | awk '{ print $2 }')
+    if [ "$IP" == "" ]; then
+      echo "Cannot resolve $1 to an IP address." >&2
+      #exit 1
+    fi
+  fi
+}
+
+function scrape_ip(){
+  target="$1"
+  page=1
+  last_page_check=
+  results_count=
+  uniq_hosts=0
+  single_page=
+  results_removed=
+  extra_status_update=
+  declare -a scrape_results
+
+  f_results=$(mktemp -p "$TMP_DIR" -t bing-ip2hosts.tmp.XXXXXX)
+
+  validate_target "$target"
+  IP="$ret"
+
+  if [[ -z "$IP" ]]; then
+    return 1
+  fi
+
+  while true; do
+    url="https://www.bing.com/search?q=ip%3A$IP+.&qs=n&first=$((page-1))0&FORM=PERE&setlang=$BING_SETLANG&setmkt=$BING_SETMKT"
+    urlpath=$(echo "$url" | cut -d '/' -f 4-)
+
+    if [[ $page == 1 ]]; then
+      display_progress
+    fi
+
+    f_scraped_html=$(mktemp -p "$TMP_DIR" -t bing-ip2hosts.tmp.XXXXXX)
+    if ! wget --quiet --no-check-certificate --output-document "$f_scraped_html" "$url"; then
+      echo -e "\n${R}wget failed to scrape $url" >&2
+      exit 1
+    fi
+
+    last_page_check=$(grep -E -o '<span class="sb_count">[0-9]+-([0-9]+) of (\1) results' "$f_scraped_html")
+    results_count=$(grep -E -o '<span class="sb_count">[^<]+' "$f_scraped_html" |cut -d '>' -f 2|cut -d ' ' -f 1-3)
+    single_page=$(grep -E -o '<span class="sb_count">[0-9] results' "$f_scraped_html")
+    results_removed=$(grep -E -o '>Some results have been removed<' "$f_scraped_html")
+    page_title=$(grep -E -o '<title>([^<]+)' "$f_scraped_html" | cut -d '>' -f 2)
+    results_highlighted_page=$(grep -E -o "class=\"sb_pagS sb_pagS_bp b_widePag sb_bp\">([0-9]+)" "$f_scraped_html" | cut -d '>' -f 2)
+    results=$(grep -E -o "<h2><a href=\"[^\"]+" "$f_scraped_html" | cut -d '"' -f 2)
+
+    if [[ $DISPLAY_URL_PREFIX == 1 ]]; then
+      vhosts=$(echo "$results" | cut -d '/' -f 1-3 | tr '[:upper:]' '[:lower:]')
+    else
+      vhosts=$(echo "$results" | cut -d '/' -f 3 | tr '[:upper:]' '[:lower:]')
+    fi
+    echo -e "$vhosts" >> "$f_results"
+
+    old_uniq_hosts=$uniq_hosts
+    uniq_hosts=$(sort < "$f_results"| uniq | wc -l)
+
+    if [[ "$DEBUG" == 1 ]]; then
+      echo
+      echo "[debug] Page: $page"
+      echo
+      echo "Results page checks:"
+      echo "[debug] Results Count: $results_count"
+      echo "[debug] Last Page: $last_page_check"
+      echo "[debug] Single Page: $single_page"
+      echo "[debug] Results Removed: $results_removed"
+
+      echo "Counting results:"
+      echo "[debug] uniq_hosts = $uniq_hosts"
+      echo "[debug] old_uniq_hosts = $old_uniq_hosts"
+      echo "[debug] Found $new_results new results"
+      echo "[debug] scrape_results array ${scrape_results[*]}"
+    fi
+
+    # how many new results did we get
+    new_results=$(( uniq_hosts - old_uniq_hosts ))
+    scrape_results+=("$new_results")
+
+    if [[ $QUIET == 0 ]]; then
+      extra_status_update=""
+      if [ -n "$results_removed" ]; then
+        extra_status_update="${R}Some results have been removed"
+      fi
+
+      display_progress
+    fi
+
+    # clean up tmp files
+    if [[ $DEBUG == 0 ]]; then
+      rm -f "$f_scraped_html"
+    fi
+
+    # check end conditions
+    if [[ -n "$last_page_check" ]]; then
+      if [[ $QUIET == 0 ]]; then
+        echo -e "\n${R}Stopping. This is the last page of results." >&2
+      fi
+      break
+    fi
+
+    if [[ -z "$results_count" ]]; then
+      if [[ $QUIET == 0 ]]; then
+        echo -e "\n${R}Stopping. The search results count is missing." >&2
+      fi
+      break
+    fi
+
+    if [[ -n "$single_page" ]]; then
+      if [[ $QUIET == 0 ]]; then
+        echo -e "\n${R}Stopping. Returned only one page of results." >&2
+      fi
+      break
+    fi
+
+    if [[ ${scrape_results[*]} =~ $stop_sequence ]]; then
+      if [[ $QUIET == 0 ]]; then
+        echo -e "\n${R}Stopping after scraping $STOP_AFTER_PAGES pages without any new results.$N" >&2
+      fi
+      break
+    fi
+
+    (( page += 1 ))
+  done
+
+  show_hosts
+}
+
 function repeat_zero() {
   how_many="$1"
   local str="0"
@@ -184,6 +319,7 @@ Usage: $0 [OPTIONS] IP|hostname
 
 OPTIONS are:
 -o FILE\tOutput hostnames to FILE.
+-i FILE\tInput list of IP addresses or hostnames from FILE.
 -n NUM\tStop after NUM scraped pages return no new results (Default: $STOP_AFTER_PAGES).
 -l\tSelect the language for use in the setlang parameter (Default: $BING_SETLANG).
 -m\tSelect the market for use in the setmkt parameter (Default is unset).
@@ -199,8 +335,9 @@ if [[ -z "$1" ]] || [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
   usage
 fi
 
-while getopts "o:n:l:m:ucqt:" optionName; do
+while getopts "i:o:n:l:m:ucqt:" optionName; do
   case "$optionName" in
+    i) INPUT_FILE=$OPTARG;;
     o) OUTPUT_FILE=$OPTARG;;
     n) STOP_AFTER_PAGES=$OPTARG;;
     l) BING_SETLANG="$OPTARG";;
@@ -215,9 +352,16 @@ done
 
 shift $((OPTIND -1))
 
-if [[ -z "$1" ]]; then
+if [[ -z "$1" ]] && [[ -z "$INPUT_FILE" ]]; then
   echo "Missing IP address or hostname." >&2
   exit 1
+fi
+
+if [[ -n "$INPUT_FILE" ]]; then
+  if [[ ! -r "$INPUT_FILE" ]]; then
+    echo "Cannot read from $INPUT_FILE." >&2
+    exit 1
+  fi
 fi
 
 # initialize outputfile
@@ -246,126 +390,14 @@ if [[ $QUIET == 0 ]]; then
   clear
 fi
 
-page=1
-last_page_check=
-results_count=
-uniq_hosts=0
-single_page=
-results_removed=
-extra_status_update=
-declare -a scrape_results
 stop_sequence=$(repeat_zero "$STOP_AFTER_PAGES")
 
-# if the parameter looks like an IP go ahead, otherwise resolve it
-if [[ "$1" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-  IP="$1"
+if [[ -n "$INPUT_FILE" ]]; then
+  for target in $(cat "$INPUT_FILE"); do
+    scrape_ip "$target"
+  done
 else
-  IP=$(nslookup "$1" | grep -E "^Address: \w+\.\w+\.\w+\.\w+$" | tail -1 | awk '{ print $2 }')
-  if [ "$IP" == "" ]; then
-    echo "Cannot resolve $1 to an IP address." >&2
-    exit 1
-  fi
+  target="$1"
+  scrape_ip "$target"
 fi
 
-f_results=$(mktemp -p "$TMP_DIR" -t bing-ip2hosts.tmp.XXXXXX)
-
-while true; do
-  url="https://www.bing.com/search?q=ip%3A$IP+.&qs=n&first=$((page-1))0&FORM=PERE&setlang=$BING_SETLANG&setmkt=$BING_SETMKT"
-  urlpath=$(echo "$url" | cut -d '/' -f 4-)
-
-  if [[ $page == 1 ]]; then
-    display_progress
-  fi
-
-  f_scraped_html=$(mktemp -p "$TMP_DIR" -t bing-ip2hosts.tmp.XXXXXX)
-  if ! wget --quiet --no-check-certificate --output-document "$f_scraped_html" "$url"; then
-    echo -e "\n${R}wget failed to scrape $url" >&2
-    exit 1
-  fi
-
-  last_page_check=$(grep -E -o '<span class="sb_count">[0-9]+-([0-9]+) of (\1) results' "$f_scraped_html")
-  results_count=$(grep -E -o '<span class="sb_count">[^<]+' "$f_scraped_html" |cut -d '>' -f 2|cut -d ' ' -f 1-3)
-  single_page=$(grep -E -o '<span class="sb_count">[0-9] results' "$f_scraped_html")
-  results_removed=$(grep -E -o '>Some results have been removed<' "$f_scraped_html")
-  page_title=$(grep -E -o '<title>([^<]+)' "$f_scraped_html" | cut -d '>' -f 2)
-  results_highlighted_page=$(grep -E -o "class=\"sb_pagS sb_pagS_bp b_widePag sb_bp\">([0-9]+)" "$f_scraped_html" | cut -d '>' -f 2)
-  results=$(grep -E -o "<h2><a href=\"[^\"]+" "$f_scraped_html" | cut -d '"' -f 2)
-
-  if [[ $DISPLAY_URL_PREFIX == 1 ]]; then
-    vhosts=$(echo "$results" | cut -d '/' -f 1-3 | tr '[:upper:]' '[:lower:]')
-  else
-    vhosts=$(echo "$results" | cut -d '/' -f 3 | tr '[:upper:]' '[:lower:]')
-  fi
-  echo -e "$vhosts" >> "$f_results"
-
-  old_uniq_hosts=$uniq_hosts
-  uniq_hosts=$(sort < "$f_results"| uniq | wc -l)
-
-  if [[ "$DEBUG" == 1 ]]; then
-    echo
-    echo "[debug] Page: $page"
-    echo
-    echo "Results page checks:"
-    echo "[debug] Results Count: $results_count"
-    echo "[debug] Last Page: $last_page_check"
-    echo "[debug] Single Page: $single_page"
-    echo "[debug] Results Removed: $results_removed"
-
-    echo "Counting results:"
-    echo "[debug] uniq_hosts = $uniq_hosts"
-    echo "[debug] old_uniq_hosts = $old_uniq_hosts"
-    echo "[debug] Found $new_results new results"
-    echo "[debug] scrape_results array ${scrape_results[*]}"
-  fi
-
-  # how many new results did we get
-  new_results=$(( uniq_hosts - old_uniq_hosts ))
-  scrape_results+=("$new_results")
-
-  if [[ $QUIET == 0 ]]; then
-    extra_status_update=""
-    if [ -n "$results_removed" ]; then
-      extra_status_update="${R}Some results have been removed"
-    fi
-
-    display_progress
-  fi
-
-  # clean up tmp files
-  if [[ $DEBUG == 0 ]]; then
-    rm -f "$f_scraped_html"
-  fi
-
-  # check end conditions
-  if [[ -n "$last_page_check" ]]; then
-    if [[ $QUIET == 0 ]]; then
-      echo -e "\n${R}Stopping. This is the last page of results." >&2
-    fi
-    break
-  fi
-
-  if [[ -z "$results_count" ]]; then
-    if [[ $QUIET == 0 ]]; then
-      echo -e "\n${R}Stopping. The search results count is missing." >&2
-    fi
-    break
-  fi
-
-  if [[ -n "$single_page" ]]; then
-    if [[ $QUIET == 0 ]]; then
-      echo -e "\n${R}Stopping. Returned only one page of results." >&2
-    fi
-    break
-  fi
-
-  if [[ ${scrape_results[*]} =~ $stop_sequence ]]; then
-    if [[ $QUIET == 0 ]]; then
-      echo -e "\n${R}Stopping after scraping $STOP_AFTER_PAGES pages without any new results.$N" >&2
-    fi
-    break
-  fi
-
-  (( page += 1 ))
-done
-
-show_hosts
