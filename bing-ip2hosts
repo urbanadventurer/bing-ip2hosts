@@ -28,7 +28,6 @@ OUTPUT_IP=0
 DISPLAY_URL_PREFIX=1
 IP=
 PREFIX=
-SUFFIX=
 DEBUG=0
 STOP_AFTER_PAGES=5
 BING_SETLANG=en-us
@@ -120,6 +119,8 @@ tput cup 24 0
 }
 
 function show_hosts() {
+  local suffix=""
+
   if [[ $QUIET == 0 ]]; then
     #clear
     echo -e "$N"
@@ -139,18 +140,18 @@ function show_hosts() {
   fi
 
   if [[ $DISPLAY_URL_PREFIX == 1 ]]; then
-    SUFFIX="/"
+    suffix="/"
   fi
 
   for h in `echo "$uniq_hosts"`
   do
-    echo "$PREFIX$h$SUFFIX"
+    echo "$PREFIX$h$suffix"
   done
 
   if [[ ! -z "$OUTPUT_FILE" ]]; then
     for h in `echo "$uniq_hosts"`
     do
-      echo "$PREFIX$h$SUFFIX" >> "$OUTPUT_FILE"
+      echo "$PREFIX$h$suffix" >> "$OUTPUT_FILE"
     done
   fi
   echo
