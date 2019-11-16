@@ -45,7 +45,7 @@ DG="\e[1;30m" #DARKGRAY
 trap ctrl_c INT
 
 function ctrl_c() {
-  echo -e "\n* ^C"
+  echo -e "\n* Stopping after user pressed CTRL-C."
 
   # clean up tmp files
   if [[ $DEBUG == 0 ]]; then
