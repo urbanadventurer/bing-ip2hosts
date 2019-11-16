@@ -51,10 +51,14 @@ function ctrl_c() {
 
 function banner() {
 
-N="\e[0m"  #NORMAL
-G="\e[32m" #GREEN
-W="\e[97m" #WHITE
-R="\e[31m" #RED
+N="\e[0;0m"  #NORMAL
+W="\e[0;97m" #WHITE
+R="\e[0;31m" #RED
+DR="\e[1;31m" #RED
+G="\e[0;32m" #GREEN
+Y="\e[1;33m" #YELLOW
+B="\e[0;34m" #BLUE
+DG="\e[1;30m" #DARKGRAY
 
 
 BANNER="
@@ -86,12 +90,48 @@ $N                  $W https://github.com/urbanadventurer/bing-ip2hosts$N
 echo -e "$BANNER"
 }
 
+
+function display_progress() {
+
+PROGRESS="$G  m,           $DG -----.--[$N bing-ip2hosts v$VERSION $DG]-------------------------
+$G  #####             $DG | $N Searching    : $IP
+$G  ####b             $DG | $N$Y Total Found  : $uniq_hosts 
+$G  ####b             $DG | $N Scraped pages: $page  
+$G  ####b 1mw,        $DG | $N 
+$G  ####b  1#####Nw,  $DG | $N Page Title   : $page_title
+$G  ####i   %########[$DG | $N Results      : $results_count
+$G  ####n      2#####[$DG | $N Paginated    : $results_highlighted_page
+$G  ####g  ,#########b$DG | $N New          : $new_results new
+$G  #############M^   $DG | $N   
+$G  ##########\"       $DG | $N   
+$G    \"%##\"           $DG | $N CTRL-C to stop
+
+${N}[ ] /$urlpath"
+
+#progress_animation="⣾⣽⣻⢿⡿⣟⣯⣷"
+progress_animation="▏▎▍▌▋▊▉▊▋▌▍▎"
+
+clear
+echo -e "$PROGRESS"
+echo -e "${B}$vhosts${N}"
+
+x=$(($page % 8))
+tput cup 13 1
+echo -e "$DR${progress_animation:$x:1}"
+tput cup 24 0
+
+}
+
 function show_hosts() {
   if [[ $QUIET == 0 ]]; then
-    echo
+    clear
+    echo -e "$N"
   fi
 
   uniq_hosts=`cat "$all_hosts" | sort | uniq`
+  count_uniq_hosts=`cat "$all_hosts" | sort | uniq | wc -l`
+  echo "Found $count_uniq_hosts after scraping $page pages."
+  echo
 
   if [[ $DEBUG == 0 ]]; then
     rm -f "$all_hosts"
@@ -116,8 +156,9 @@ function show_hosts() {
       echo "$PREFIX$h$SUFFIX" >> "$OUTPUT_FILE"
     done
   fi
-
+  echo
 }
+
 
 if [[ -z "$1" ]] || [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
 clear
@@ -222,11 +263,14 @@ all_hosts=`mktemp -p $TMP_DIR -t bing-ip2hosts.tmp.XXXXXX`
 while [[ -z "$last_page_check" ]] && [[ -n "$results_count" ]] && [[ -z "$single_page" ]]; do
 
   if [[ $QUIET == 0 ]]; then
-    echo -ne "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b"
-    echo -en "[${animation: $(( $page % 4 )) :1}][ $IP | Scraping page $((page + 1)) | Results: $results_count | Found $uniq_hosts ]"
+  #  echo -ne "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b"
+  #  echo -en "[${animation: $(( $page % 4 )) :1}][ $IP | Scraping page $((page + 1)) | Results: $results_count | Found $uniq_hosts ]          "
+
+    display_progress
   fi
 
   url="https://www.bing.com/search?q=ip%3A$IP+.&qs=n&first=${page}0&FORM=PERE&setlang=$BING_SETLANG&setmkt=$BING_SETMKT"
+  urlpath=`echo "$url" | cut -d '/' -f 4-`
   out=`mktemp -p "$TMP_DIR" -t bing-ip2hosts.tmp.XXXXXX`
 
   if ! wget --quiet --no-check-certificate --output-document "$out" "$url"; then
@@ -238,6 +282,8 @@ while [[ -z "$last_page_check" ]] && [[ -n "$results_count" ]] && [[ -z "$single
   results_count=`egrep -o '<span class="sb_count">[^<]+' $out|cut -d '>' -f 2|cut -d ' ' -f 1-3`
   single_page=`egrep -o '<span class="sb_count">[0-9] results' $out`
   results_removed=`egrep -o '>Some results have been removed<' $out`
+  page_title=`egrep -o '<title>([^<]+)' $out | cut -d '>' -f 2`
+  results_highlighted_page=`egrep -o "class=\"sb_pagS sb_pagS_bp b_widePag sb_bp\">([0-9]+)" $out | cut -d '>' -f 2`
 
   # no captcha support or detection
   # pages will contain "Typing the characters in the picture above helps us ensure that a person, not a program, is performing a search"
@@ -250,6 +296,7 @@ while [[ -z "$last_page_check" ]] && [[ -n "$results_count" ]] && [[ -z "$single
     vhosts=`echo "$results" | cut -d '/' -f 3 | tr '[:upper:]' '[:lower:]'`
   fi
   echo -e "$vhosts" >> "$all_hosts"
+
 
   old_uniq_hosts=$uniq_hosts
   uniq_hosts=`cat "$all_hosts" | sort | uniq | wc -l`
