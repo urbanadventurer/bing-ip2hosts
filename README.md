@@ -42,3 +42,9 @@ LINKS
 - Homepage: http://www.morningstarsecurity.com/research/bing-ip2hosts/
 - Source: https://github.com/urbanadventurer/bing-ip2hosts
 - Kali Linux Tools: https://tools.kali.org/information-gathering/bing-ip2hosts
+- Kali Linux Package: https://gitlab.com/kalilinux/packages/bing-ip2hosts/tree/kali/master
+- Homebrew Kali: https://github.com/b-ramsey/homebrew-kali
+- ArchLinux Package: https://aur.archlinux.org/packages/bing-ip2hosts/
+- ArchStrike : https://archstrike.org/packages/bing-ip2hosts
+- BlackArch : https://blackarch.org/recon.html
+
