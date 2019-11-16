@@ -266,6 +266,10 @@ while true; do
   url="https://www.bing.com/search?q=ip%3A$IP+.&qs=n&first=$((page-1))0&FORM=PERE&setlang=$BING_SETLANG&setmkt=$BING_SETMKT"
   urlpath=$(echo "$url" | cut -d '/' -f 4-)
 
+  if [[ $page == 1 ]]; then
+    display_progress
+  fi
+
   f_scraped_html=$(mktemp -p "$TMP_DIR" -t bing-ip2hosts.tmp.XXXXXX)
   if ! wget --quiet --no-check-certificate --output-document "$f_scraped_html" "$url"; then
     echo -e "\n${R}wget failed to scrape $url" >&2
