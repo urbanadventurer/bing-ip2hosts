@@ -25,11 +25,11 @@ OPTIONS are:
 -o FILE	Output hostnames to FILE.
 -n NUM	Stop after NUM scraped pages return no new results (Default: 5).
 -l	Select the language for use in the setlang parameter (Default: en-us).
+-m	Select the market for use in the setmkt parameter (Default is unset).
 -u	Only display hostnames. Default is to include URL prefixes.
 -i	CSV output. Outputs the IP and hostname on each line, separated by a comma.
 -q	Quiet. Disable output except for final results.
 -t DIR	Use this directory instead of /tmp.
-
 ```
 
 INSTALL
