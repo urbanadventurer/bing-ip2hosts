@@ -12,10 +12,11 @@ Version 0.6 November, 2019
 * Support for changing the search language.
 * Support for setting a search region/market.
 * Displays URL prefixes by default.
+* Shows if some search results have been removed.
 
 ## FIXES
 * New parsing of Bing.com search results.
-* Checks for and optionally creates tmp directories.
+* Checks for and optionally creates tmp directories, fixing a known issue in earlier versions.
 * Displays URL prefixes instead of assuming http:// as in earlier versions.
 
 ## MISC
