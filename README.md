@@ -39,8 +39,6 @@ sudo cp ./bing-ip2hosts /usr/local/bin/
 
 LIMITATIONS
 -----------
-* Doesn't check for a non existant TMP folder
-* The optional prefix of http:// is not from bing results so the site may actually be an https:// site.
 * Will stop scraping pages when a captcha is presented by Bing
 
 Homepage: http://www.morningstarsecurity.com/research/bing-ip2hosts/
