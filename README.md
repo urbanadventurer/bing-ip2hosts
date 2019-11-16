@@ -37,10 +37,6 @@ INSTALL
 sudo cp ./bing-ip2hosts /usr/local/bin/
 
 
-KNOWN ISSUES
-------------
-* Will stop scraping pages when a CAPTCHA is presented by Bing
-
 LINKS
 -----
 - Homepage: http://www.morningstarsecurity.com/research/bing-ip2hosts/
