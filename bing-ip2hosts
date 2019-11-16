@@ -121,7 +121,7 @@ tput cup 24 0
 
 function show_hosts() {
   if [[ $QUIET == 0 ]]; then
-    clear
+    #clear
     echo -e "$N"
   fi
 
