@@ -87,6 +87,18 @@ $N                  $W https://github.com/urbanadventurer/bing-ip2hosts$N"
 
 function display_progress() {
 
+tput_cols=$(tput cols)
+maxwidth_url=$((tput_cols - 6))
+
+unset urlpath_truncated
+if [[ ${#urlpath} -gt $maxwidth_url ]]; then
+  urlpath_truncated="${urlpath:0:$maxwidth_url}"
+fi
+
+tput_lines=$(tput lines)
+max_vhosts=$(( tput_lines - 15))
+vhosts_truncated=$( echo "$vhosts" | head -$max_vhosts )
+
 PROGRESS="$G  m,           $DG -----.--[$N bing-ip2hosts v$VERSION $DG]-------------------------
 $G  #####             $DG | $N Searching    : $IP
 $G  ####b             $DG | $N$Y Total Found  : $uniq_hosts 
@@ -100,14 +112,14 @@ $G  #############M^   $DG | $N
 $G  ##########\"       $DG | $N $extra_status_update
 $G    \"%##\"           $DG | $N CTRL-C to stop
 
-${N}[ ] /$urlpath"
+${N}[ ] /${urlpath_truncated:-$urlpath}"
 
   #progress_animation="⣾⣽⣻⢿⡿⣟⣯⣷"
   progress_animation="▏▎▍▌▋▊▉▊▋▌▍▎"
 
   clear
   echo -e "$PROGRESS"
-  echo -e "${B}$vhosts${N}"
+  echo -e "${B}$vhosts_truncated${N}"
 
   x=$((page % 8))
   tput cup 13 1
