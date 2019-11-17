@@ -21,7 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 VERSION=1.0.1
-TMP_DIR=/tmp
+TMP_DIR="${TMPDIR:-/tmp}"
 QUIET=0
 OUTPUT_IP=0
 DISPLAY_URL_PREFIX=1
@@ -31,6 +31,7 @@ DEBUG=0
 STOP_AFTER_PAGES=5
 BING_SETLANG=en-us
 BING_SETMKT=
+UNAME=$(uname)
 
 N="\033[0;0m"  #NORMAL
 W="\033[0;97m" #WHITE
@@ -136,7 +137,7 @@ function show_hosts() {
   fi
 
   uniq_hosts=$(sort < "$f_results" | uniq)
-  count_uniq_hosts=$(sort < "$f_results" | uniq | wc -l)
+  count_uniq_hosts=$(sort < "$f_results" | uniq | wc -l | tr -d ' ')
   echo "Found $count_uniq_hosts after scraping $page pages."
   echo
 
@@ -190,7 +191,7 @@ function scrape_ip(){
   extra_status_update=
   declare -a scrape_results
 
-  f_results=$(mktemp -p "$TMP_DIR" -t bing-ip2hosts.tmp.XXXXXX)
+  f_results=$(mktemp -p "$TMP_DIR" -t bing-ip2hosts.tmp.XXXXXX 2>/dev/null || mktemp "$TMP_DIR"/bing-ip2hosts.tmp.XXXXXX)
 
   validate_target "$target"
   IP="$ret"
@@ -207,7 +208,7 @@ function scrape_ip(){
       display_progress
     fi
 
-    f_scraped_html=$(mktemp -p "$TMP_DIR" -t bing-ip2hosts.tmp.XXXXXX)
+    f_scraped_html=$(mktemp -p "$TMP_DIR" -t bing-ip2hosts.tmp.XXXXXX 2>/dev/null || mktemp "$TMP_DIR"/bing-ip2hosts.tmp.XXXXXX)
     if ! wget --quiet --no-check-certificate --output-document "$f_scraped_html" "$url"; then
       echo -e "\n${R}wget failed to scrape $url" >&2
       exit 1
@@ -226,11 +227,17 @@ function scrape_ip(){
     else
       vhosts=$(echo "$results" | cut -d '/' -f 3)
     fi
-    vhosts="${vhosts,,}" # convert to lowercase
+
+    if [[ $UNAME == "Darwin" ]]; then
+      vhosts=$(echo "$vhosts" | tr '[:upper:]' '[:lower:]' ) # macOS has an old version of Bash
+    else
+      vhosts="${vhosts,,}" # convert to lowercase in pure Bash
+    fi
+    
     echo -e "$vhosts" >> "$f_results"
 
     old_uniq_hosts=$uniq_hosts
-    uniq_hosts=$(sort < "$f_results"| uniq | wc -l)
+    uniq_hosts=$(sort < "$f_results"| uniq | wc -l | tr -d ' ')
 
     if [[ "$DEBUG" == 1 ]]; then
       echo
