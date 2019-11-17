@@ -312,8 +312,9 @@ function usage()
 echo -e "bing-ip2hosts is a Bing.com web scraper that discovers websites by IP address.
 Use for OSINT and discovering attack-surface of penetration test targets.
 
-Find hostnames that share an IP address with your target which can be a hostname or an IP address.
-This uses the Bing.com feature of seaching by IP address, e.g. \"IP:40.112.72.205\".
+Find hostnames that share an IP address with your target which can be a hostname
+or an IP address. This uses the Bing.com feature of seaching by IP address,
+e.g. \"IP:40.112.72.205\".
 
 Usage: $0 [OPTIONS] IP|hostname
 
