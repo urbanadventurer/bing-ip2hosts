@@ -8,6 +8,7 @@ Version 1.0.1 November X, 2019
 * Improved screen output on 80x24 terminals
 * Improved progress bar animation
 * Update shield image from GPLv2 to GPLv3
+* Fixed issue with displaying banner in quiet mode
 
 ## MISC
 * Added -V to display the version
