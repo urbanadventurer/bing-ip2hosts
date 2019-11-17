@@ -298,8 +298,6 @@ function scrape_ip(){
 
     (( page += 1 ))
   done
-
-  show_hosts
 }
 
 function repeat_zero() {
@@ -407,12 +405,15 @@ fi
 stop_sequence=$(repeat_zero "$STOP_AFTER_PAGES")
 
 if [[ -n "$INPUT_FILE" ]]; then
+
   while read -r target
   do
     scrape_ip "$target"
   done < "$INPUT_FILE"
+  show_hosts
 
 else
   target="$1"
   scrape_ip "$target"
+  show_hosts
 fi
