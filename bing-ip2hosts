@@ -131,15 +131,8 @@ ${N}[ ] /${urlpath_truncated:-$urlpath}"
 function show_hosts() {
   local suffix=""
 
-  if [[ $QUIET == 0 ]]; then
-    #clear
-    echo -e "$N"
-  fi
-
   uniq_hosts=$(sort < "$f_results" | uniq)
   count_uniq_hosts=$(sort < "$f_results" | uniq | wc -l | tr -d ' ')
-  echo "Found $count_uniq_hosts after scraping $page pages."
-  echo
 
   if [[ $DEBUG == 0 ]]; then
     rm -f "$f_results"
@@ -153,6 +146,11 @@ function show_hosts() {
     suffix="/"
   fi
 
+  if [[ $QUIET == 0 ]]; then
+    echo -e "\n${N}Found $count_uniq_hosts after scraping $page pages."
+    echo "---------------------------------------------------"
+  fi
+
   for h in $uniq_hosts
   do
     echo "$PREFIX$h$suffix"
@@ -164,7 +162,6 @@ function show_hosts() {
       echo "$PREFIX$h$suffix" >> "$OUTPUT_FILE"
     done
   fi
-  echo
 }
 
 function validate_target(){
@@ -203,7 +200,7 @@ function scrape_ip(){
     url="https://www.bing.com/search?q=ip%3A$IP+.&qs=n&first=$((page-1))0&FORM=PERE&setlang=$BING_SETLANG&setmkt=$BING_SETMKT"
     urlpath=$(echo "$url" | cut -d '/' -f 4-)
 
-    if [[ $page == 1 ]]; then
+    if [[ $page == 1 ]] && [[ $QUIET == 0 ]]; then
       display_progress
     fi
 
