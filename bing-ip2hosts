@@ -115,13 +115,13 @@ $G    \"%##\"           $DG | $N CTRL-C to stop
 ${N}[ ] /${urlpath_truncated:-$urlpath}"
 
   #progress_animation="⣾⣽⣻⢿⡿⣟⣯⣷"
-  progress_animation="▏▎▍▌▋▊▉▊▋▌▍▎"
+  progress_animation="▏▎▍▌▋▊▉█▊▋▌▍▎"
 
   clear
   echo -e "$PROGRESS"
   echo -e "${B}$vhosts_truncated${N}"
 
-  x=$((page % 8))
+  x=$((page % 13))
   tput cup 13 1
   echo -e "$DR${progress_animation:$x:1}"
   tput cup 24 0
