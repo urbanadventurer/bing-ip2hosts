@@ -316,7 +316,7 @@ function usage()
   if [[ $(tput lines) == "24" ]]; then
     # show the banner only in an 80x24 default terminal
     echo -n "[Press Enter]"
-    read
+    read -r
   else
     echo
   fi
@@ -406,11 +406,12 @@ fi
 stop_sequence=$(repeat_zero "$STOP_AFTER_PAGES")
 
 if [[ -n "$INPUT_FILE" ]]; then
-  for target in $(cat "$INPUT_FILE"); do
+  while read -r target
+  do
     scrape_ip "$target"
-  done
+  done < "$INPUT_FILE"
+
 else
   target="$1"
   scrape_ip "$target"
 fi
-
