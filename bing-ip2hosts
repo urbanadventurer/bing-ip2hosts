@@ -413,12 +413,27 @@ stop_sequence=$(repeat_zero "$STOP_AFTER_PAGES")
 
 if [[ -n "$INPUT_FILE" ]]; then
 
+  declare -a results_file
+  declare -a results_ip
+  declare -a results_pages
+
   while read -r target
   do
     scrape_ip "$target"
+    # copy $f_results
+    result_files+=("$f_results")
+    result_ip+=("$IP")
+    result_page+=("$page")
   done < "$INPUT_FILE"
-  show_hosts
 
+  # report on each result
+  for (( i=0; i < ${#result_files[@]}; i++)); do
+    f_results=${result_files[i]}
+    IP=${result_ip[i]}
+    page=${result_page[i]}
+    show_hosts
+  done
+  
 else
   target="$1"
   scrape_ip "$target"
