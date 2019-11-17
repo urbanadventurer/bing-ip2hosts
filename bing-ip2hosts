@@ -346,6 +346,7 @@ OPTIONS are:
 -c\tCSV output. Outputs the IP and hostname on each line, separated by a comma.
 -q\tQuiet. Disable output except for final results.
 -t DIR\tUse this directory instead of /tmp.
+-V\tDisplay the version number of bing-ip2hosts and exit.
 "
   exit 1
 }
@@ -354,7 +355,7 @@ if [[ -z "$1" ]] || [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
   usage
 fi
 
-while getopts "i:o:n:l:m:ucqt:" optionName; do
+while getopts "i:o:n:l:m:ucqt:V" optionName; do
   case "$optionName" in
     i) INPUT_FILE=$OPTARG;;
     o) OUTPUT_FILE=$OPTARG;;
@@ -365,6 +366,7 @@ while getopts "i:o:n:l:m:ucqt:" optionName; do
     c) OUTPUT_IP=1;;
     q) QUIET=1;;
     t) TMP_DIR="$OPTARG";;
+    V) echo "bing-ip2hosts v$VERSION"; exit;;
 [?]) echo "Error"; exit 1;;
 esac
 done
