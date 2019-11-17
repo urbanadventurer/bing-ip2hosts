@@ -173,9 +173,8 @@ function validate_target(){
     ret="$1"
   else
     ret=$(nslookup "$1" | grep -E "^Address: \w+\.\w+\.\w+\.\w+$" | tail -1 | awk '{ print $2 }')
-    if [ "$IP" == "" ]; then
+    if [ "$ret" == "" ]; then
       echo "Cannot resolve $1 to an IP address." >&2
-      #exit 1
     fi
   fi
 }
