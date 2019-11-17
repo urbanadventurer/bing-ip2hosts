@@ -1,6 +1,7 @@
 Version 1.0.1 November X, 2019
 
 ## FIXES
+* Fully compatible with macOS
 * Terminal colours work on macOS
 * Improved screen output on 80x24 terminals
 * Fix progress bar animation

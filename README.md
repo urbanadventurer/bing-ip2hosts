@@ -1,4 +1,4 @@
-[![License](https://img.shields.io/badge/license-GPLv2-green.svg)](https://raw.githubusercontent.com/urbanadventurer/whatweb/master/LICENSE)
+[![License](https://img.shields.io/badge/license-GPLv3-green.svg)](https://raw.githubusercontent.com/urbanadventurer/whatweb/master/LICENSE)
 
 bingip2hosts is a Bing.com web scraper that discovers websites by IP address.
 
