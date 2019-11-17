@@ -222,10 +222,11 @@ function scrape_ip(){
     results=$(grep -E -o "<h2><a href=\"[^\"]+" "$f_scraped_html" | cut -d '"' -f 2)
 
     if [[ $DISPLAY_URL_PREFIX == 1 ]]; then
-      vhosts=$(echo "$results" | cut -d '/' -f 1-3 | tr '[:upper:]' '[:lower:]')
+      vhosts=$(echo "$results" | cut -d '/' -f 1-3)
     else
-      vhosts=$(echo "$results" | cut -d '/' -f 3 | tr '[:upper:]' '[:lower:]')
+      vhosts=$(echo "$results" | cut -d '/' -f 3)
     fi
+    vhosts="${vhosts,,}" # convert to lowercase
     echo -e "$vhosts" >> "$f_results"
 
     old_uniq_hosts=$uniq_hosts
