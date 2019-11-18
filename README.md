@@ -4,6 +4,8 @@
 
 Bing-ip2hosts is a Bing.com web scraper to discover hostnames by IP address.
 
+![bing-ip2hosts-github-io](https://user-images.githubusercontent.com/101783/69076610-4a16f700-0a4d-11ea-930c-a0df21f296a9.gif)
+
 ## Description
 
 Bing-ip2hosts is a Bing.com web scraper that discovers hostnames by IP address. Bing is the flagship Microsoft search engine formerly known as MSN Search and Live Search. 
@@ -67,6 +69,8 @@ Sometimes Bing does not permit the user to reach the end of search result pages.
 For example, in a search that shows 3 pages of results, it will not always allow the user to reach the 3rd page. Instead it will return the first page of results. This can be demonstrated by searching for `ip:8.8.8.8 .`. Note that it is not always the first page that it returned to.
 
 ## Help
+
+![usage](https://user-images.githubusercontent.com/101783/69076609-4a16f700-0a4d-11ea-9120-e74ef72b886b.gif)
 
 Use the following command for usage information.
 
