@@ -95,12 +95,17 @@ OPTIONS are:
 
 bing-ip2hosts requires wget. This is installed by default in Ubuntu Linux and Kali Linux.
 
-It can be installed in macOS with homebrew. `homebrew install wget`
+It can be installed in macOS with homebrew. 
+```sh
+homebrew install wget
+```
 
 ### Install
 
-Copy bing-ip2hosts into a folder in your $PATH. `sudo cp ./bing-ip2hosts /usr/local/bin/`
-
+Copy bing-ip2hosts into a folder in your $PATH. 
+```sh
+sudo cp ./bing-ip2hosts /usr/local/bin/
+```
 
 ## Compatibility
 
@@ -128,11 +133,6 @@ GNU bash, version 3.2.57(1)-release (x86_64-apple-darwin19)
 Copyright (C) 2007 Free Software Foundation, Inc.
 ```
 
-## Author
-
-This is written by Andrew Horton, aka urbanadventurer.
-
-
 ## Links
 
 - Homepage: http://www.morningstarsecurity.com/research/bing-ip2hosts/
@@ -145,13 +145,6 @@ This is written by Andrew Horton, aka urbanadventurer.
 - BlackArch : https://blackarch.org/recon.html
 
 
-## Contributing
-
-If you have any ideas, just open an issue and tell me what you think.
-
-If you'd like to contribute, please fork the repository and make changes as you'd like. Pull requests are warmly welcome.
-
-
 ## Related Projects
 
 Here's a list of projects that also search Bing by IP address.
@@ -162,9 +155,21 @@ Here's a list of other related projects for recon using Bing. Note that these do
 - [recon-ng](https://github.com/lanmaster53/recon-ng) by lanmaster53 
 
 
+## Author
+
+Copyright Andrew Horton, aka urbanadventurer.
+
+
 ## Licensing
 
 This project is licensed under GPL version 3. See the attached `LICENSE.txt`.
+
+
+## Contributing
+
+If you have any ideas, just open an issue and tell me what you think.
+
+If you'd like to contribute, please fork the repository and make changes as you'd like. Pull requests are warmly welcome.
 
 
 ## Acknowledgments
