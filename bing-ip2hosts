@@ -146,7 +146,13 @@ ${N}[ ] /${urlpath_truncated:-$urlpath}"
 function show_hosts() {
   local suffix=""
 
-  uniq_hosts=$(sort < "$f_results" | uniq)
+  # sort by hostname. ignore URL prefix
+  if [[ $DISPLAY_URL_PREFIX == 1 ]]; then
+    uniq_hosts=$(sort -u -t '/' -k 3 < "$f_results")
+  else
+    uniq_hosts=$(sort -u < "$f_results")
+  fi
+
   count_uniq_hosts=$(sort < "$f_results" | uniq | wc -l | tr -d ' ')
 
   if [[ $DEBUG == 0 ]]; then
