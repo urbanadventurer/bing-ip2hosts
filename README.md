@@ -100,6 +100,12 @@ It can be installed in macOS with homebrew.
 homebrew install wget
 ```
 
+It can be installed in Debian and Ubuntu Linux with apt. 
+```sh
+sudo apt install wget
+```
+
+
 ### Install
 
 Copy bing-ip2hosts into a folder in your $PATH. 
