@@ -167,7 +167,7 @@ function show_hosts() {
     suffix="/"
   fi
 
-  echo -en $N
+  echo -en "$N"
 
   for h in $uniq_hosts
   do
