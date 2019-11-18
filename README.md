@@ -1,12 +1,14 @@
 [![License](https://img.shields.io/badge/license-GPLv3-green.svg)](https://raw.githubusercontent.com/urbanadventurer/whatweb/master/LICENSE)
 
-# Bing-ip2hosts README
+# Bing-ip2hosts
 
 Bing-ip2hosts is a Bing.com web scraper to discover hostnames by IP address.
 
 ## Description
 
-Bing-ip2hosts is a Bing.com web scraper that discovers hostnames by IP address. Bing is the flagship Microsoft search engine formerly known as MSN Search and Live Search. It provides a feature unique to search engines - it allows searching by IP address. Bing-ip2hosts uses this feature.
+Bing-ip2hosts is a Bing.com web scraper that discovers hostnames by IP address. Bing is the flagship Microsoft search engine formerly known as MSN Search and Live Search. 
+
+> It provides a feature unique to search engines - it allows searching by IP address. Bing-ip2hosts uses this feature.
 
 It can be used to discover subdomains and other related domains. It also helps to identify websites hosted in a shared hosting environment. This technique follows best practices during the reconnaissance phase of a penetration test or bug bounty, to expand the target's attack surface.
 
@@ -14,25 +16,25 @@ Unlike other many other recon tools that web scrape Bing, this tool has smart sc
 
 ### Features
 
-- Smart scraping behaviour to maximize hostname discovery
-- Console user interface showing scraping progress
-- Discovers subdomains and hostnames by IP address
-- Can search by hostname or IP address
-- Output with or without URL prefix
-- Output to file, in list or CSV format
-- Bing API key not required
-- Select the search language and market
-- Specify targets from the commandline or from a file
-- Lightweight Bash shell script without heavy dependencies
+- Smart scraping behaviour to maximize hostname discovery.
+- Console user interface showing scraping progress.
+- Discovers subdomains and hostnames by IP address.
+- Can search by hostname or IP address.
+- Output with or without URL prefix.
+- Output to file, in list or CSV format.
+- Bing API key not required.
+- Select the search language and market.
+- Specify targets from the commandline or from a file.
+- Lightweight Bash shell script without heavy dependencies.
 
 
-## Searching Technique
+## Bing Web Scraping
 
-Bing provides a feature unique to search engines - it allows searching by IP address. To try this, go to Bing.com and search for "IP:40.113.200.201". It should show you results from microsoft.com. If it shows empty results, then add a single dot.
+Bing provides a feature unique to search engines - it allows searching by IP address. To try this, go to Bing.com and search for `IP:40.113.200.201`. It should show you results from microsoft.com. If it shows empty results, then add a single dot.
 
 ### Smart Scraping Behaviour
 
-This continues scraping new search result pages until it no longer finds new results.
+Unlike other Bing web scrapers that stop after scraping 10 result pages, bing-ip2hosts can scrape thousands of results. It continues scraping search result pages until it no longer finds new results. 
 
 Scraping completes when any of the following conditions are met:
 - After a configurable threshold of pages fail to return new results (default: 5).
@@ -51,20 +53,18 @@ If searching by an IP address returns empty search results, add a single dot. Bi
 By default this tool specifies the search langauge as "en-us". The market is left as unset, as this seems to maximize results. 
 
 The following URL parameters can be configured:
-- setlang
-- setmkt
+- setlang (Language)
+- setmkt (Market code)
 
-Both the language and the market code can affect how many results are returned.
+Both these parameters can affect how many results are returned.
 
 A full list of market codes can be found at [docs.microsoft.com/en-us/azure/cognitive-services/bing-web-search/language-support](https://docs.microsoft.com/en-us/azure/cognitive-services/bing-web-search/language-support).
 
-
-### Skipping back pages
+### Repeating Search Result Pages
 
 Sometimes Bing does not permit the user to reach the end of search result pages.
 
-For example, in a search that shows 3 pages of results, it will not always allow the user to reach the 3rd page. Instead it will return results of the first page. This can be seen by searching for "IP:8.8.8.8 .". It is not always the 1st page that it returned to.
-
+For example, in a search that shows 3 pages of results, it will not always allow the user to reach the 3rd page. Instead it will return the first page of results. This can be demonstrated by searching for `ip:8.8.8.8 .`. Note that it is not always the first page that it returned to.
 
 ## Help
 
@@ -95,12 +95,11 @@ OPTIONS are:
 
 bing-ip2hosts requires wget. This is installed by default in Ubuntu Linux and Kali Linux.
 
-It can be installed in macOS with homebrew:
-`homebrew install wget`
+It can be installed in macOS with homebrew. `homebrew install wget`
 
 ### Install
 
-sudo cp ./bing-ip2hosts /usr/local/bin/
+Copy bing-ip2hosts into a folder in your $PATH. `sudo cp ./bing-ip2hosts /usr/local/bin/`
 
 
 ## Compatibility
@@ -165,11 +164,13 @@ Here's a list of other related projects for recon using Bing. Note that these do
 
 ## Licensing
 
-This project is licensed under GPL version 3. See the attached LICENSE.txt.
+This project is licensed under GPL version 3. See the attached `LICENSE.txt`.
 
 
 ## Acknowledgments
 
-This project uses
-- [GNU wget](https://www.gnu.org/software/wget/)
-
+This project uses:
+- [bash](https://www.gnu.org/software/bash/)
+- [wget](https://www.gnu.org/software/wget/)
+- [grep](https://www.gnu.org/software/grep/)
+- [sed](https://www.gnu.org/software/sed/)
