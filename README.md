@@ -1,4 +1,4 @@
-[![License](https://img.shields.io/badge/license-GPLv3-green.svg)](https://raw.githubusercontent.com/urbanadventurer/whatweb/master/LICENSE)
+[![License](https://img.shields.io/badge/license-GPLv3-green.svg)](https://raw.githubusercontent.com/urbanadventurer/whatweb/master/LICENSE) [![made-with-bash](https://img.shields.io/badge/Made%20with-Bash-1f425f.svg)](https://www.gnu.org/software/bash/)
 
 # Bing-ip2hosts
 
