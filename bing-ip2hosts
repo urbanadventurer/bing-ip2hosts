@@ -240,23 +240,6 @@ function scrape_ip(){
     old_uniq_hosts=$uniq_hosts
     uniq_hosts=$(sort < "$f_results"| uniq | wc -l | tr -d ' ')
 
-    if [[ "$DEBUG" == 1 ]]; then
-      echo
-      echo "[debug] Page: $page"
-      echo
-      echo "Results page checks:"
-      echo "[debug] Results Count: $results_count"
-      echo "[debug] Last Page: $last_page_check"
-      echo "[debug] Single Page: $single_page"
-      echo "[debug] Results Removed: $results_removed"
-
-      echo "Counting results:"
-      echo "[debug] uniq_hosts = $uniq_hosts"
-      echo "[debug] old_uniq_hosts = $old_uniq_hosts"
-      echo "[debug] Found $new_results new results"
-      echo "[debug] scrape_results array ${scrape_results[*]}"
-    fi
-
     # how many new results did we get
     new_results=$(( uniq_hosts - old_uniq_hosts ))
     scrape_results+=("$new_results")
