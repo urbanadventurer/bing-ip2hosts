@@ -100,6 +100,8 @@ tput_lines=$(tput lines)
 max_vhosts=$(( tput_lines - 15))
 vhosts_truncated=$( echo "$vhosts" | head -$max_vhosts )
 
+highlight_paginated_links="${paginated_links/$paginated_current_link/${R}$paginated_current_link${N}}"
+
 PROGRESS="$G  m,           $DG -----.--[$N bing-ip2hosts v$VERSION $DG]-------------------------
 $G  #####             $DG | $N Searching    : $IP
 $G  ####b             $DG | $N$Y Total Found  : $uniq_hosts 
@@ -107,7 +109,7 @@ $G  ####b             $DG | $N Scraped pages: $page
 $G  ####b 1mw,        $DG | $N 
 $G  ####b  1#####Nw,  $DG | $N Page Title   : $page_title
 $G  ####i   %########[$DG | $N Results      : $results_count
-$G  ####n      2#####[$DG | $N Pagination   : $results_highlighted_page
+$G  ####n      2#####[$DG | $N Pagination   : $highlight_paginated_links
 $G  ####g  ,#########b$DG | $N New          : $new_results new
 $G  #############M^   $DG | $N   
 $G  ##########\"       $DG | $N $extra_status_update
@@ -215,7 +217,10 @@ function scrape_ip(){
     single_page=$(grep -E -o '<span class="sb_count">[0-9] results' "$f_scraped_html")
     results_removed=$(grep -E -o '>Some results have been removed<' "$f_scraped_html")
     page_title=$(grep -E -o '<title>([^<]+)' "$f_scraped_html" | cut -d '>' -f 2)
-    results_highlighted_page=$(grep -E -o "class=\"sb_pagS sb_pagS_bp b_widePag sb_bp\">([0-9]+)" "$f_scraped_html" | cut -d '>' -f 2)
+
+    paginated_current_link=$(grep -E -o "class=\"sb_pagS sb_pagS_bp b_widePag sb_bp\">([0-9]+)" "$f_scraped_html" | cut -d '>' -f 2)
+    paginated_links=$(grep -E -o "<h4 class=\"b_hide\">Pagination</h4>.*?/nav" "$f_scraped_html" | grep -E -o ">([0-9\.]+)</a" | grep -E -o "[0-9\.]+" | tr '\n' ' ')
+
     results=$(grep -E -o "<h2><a href=\"[^\"]+" "$f_scraped_html" | cut -d '"' -f 2)
 
     if [[ $DISPLAY_URL_PREFIX == 1 ]]; then
