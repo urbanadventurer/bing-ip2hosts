@@ -113,7 +113,7 @@ tput_lines=$(tput lines)
 max_vhosts=$(( tput_lines - 15))
 vhosts_truncated=$( echo "$vhosts" | head -$max_vhosts )
 
-highlight_paginated_links="${paginated_links/$paginated_current_link/${REVERSED}$paginated_current_link${N}}"
+highlight_paginated_links="${paginated_links/$paginated_current_link/${G}${REVERSED}$paginated_current_link${N}}"
 
 PROGRESS="$G  m,           $DG -----.--[$N bing-ip2hosts v$VERSION $DG]-------------------------
 $G  #####             $DG | $N Searching    : $IP
@@ -161,10 +161,7 @@ function show_hosts() {
     suffix="/"
   fi
 
-  if [[ $QUIET == 0 ]]; then
-    echo -e "\n${N}Found $count_uniq_hosts after scraping $page pages."
-    echo "---------------------------------------------------"
-  fi
+  echo -en $N
 
   for h in $uniq_hosts
   do
@@ -176,6 +173,11 @@ function show_hosts() {
     do
       echo "$PREFIX$h$suffix" >> "$OUTPUT_FILE"
     done
+  fi
+
+  if [[ $QUIET == 0 ]]; then
+    echo -e "\n${G}✓${N} Found ${Y}$count_uniq_hosts ${N}results after scraping ${Y}$page ${N}pages."
+    echo 
   fi
 }
 
