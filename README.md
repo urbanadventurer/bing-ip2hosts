@@ -180,8 +180,10 @@ If you'd like to contribute, please fork the repository and make changes as you'
 
 ## Acknowledgments
 
-This project uses:
+This project uses the following opensource packages.
+
 - [bash](https://www.gnu.org/software/bash/)
 - [wget](https://www.gnu.org/software/wget/)
 - [grep](https://www.gnu.org/software/grep/)
 - [sed](https://www.gnu.org/software/sed/)
+
