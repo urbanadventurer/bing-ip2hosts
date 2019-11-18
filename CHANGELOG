@@ -2,6 +2,7 @@ Version 1.0.1 November X, 2019
 
 ## FEATURES
 * Improved output for multiple targets
+* Highlights the current page in paginated search results
 
 ## FIXES
 * Fully compatible with macOS
