@@ -57,6 +57,18 @@ function ctrl_c() {
   exit 1
 }
 
+function dependency_check() {
+
+  if [[ "$(which wget)" == "" ]]; then
+    echo "This script requires wget, please resolve and try again."
+     if [[ $UNAME == "Darwin" ]]; then
+      echo "Try: brew install wget"
+    fi
+    exit 1
+  fi
+
+}
+
 function banner() {
 BANNER="
 $G  m,                $N   .,recon:,        ,,
@@ -328,12 +340,15 @@ OPTIONS are:
 -t DIR\tUse this directory instead of /tmp.
 -V\tDisplay the version number of bing-ip2hosts and exit.
 "
+  dependency_check
   exit 1
 }
 
 if [[ -z "$1" ]] || [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
   usage
 fi
+
+dependency_check
 
 while getopts "i:o:n:l:m:ucqt:V" optionName; do
   case "$optionName" in
