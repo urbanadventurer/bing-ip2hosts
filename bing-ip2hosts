@@ -3,7 +3,7 @@
 # bing-ip2hosts - Enumerate hostnames from Bing.com for an IP address.
 # Bing.com is Microsoft's search engine which has an IP: search parameter.
 #
-# Copyright (C) 2019 Andrew Horton aka urbanadventurer
+# Copyright (C) 2009 - 2019 Andrew Horton aka urbanadventurer
 # Homepage: http://www.morningstarsecurity.com/research/bing-ip2hosts
 #
 # License: GPLv3
