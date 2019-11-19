@@ -323,7 +323,7 @@ function usage()
   clear
   banner
 
-  if [[ $(tput lines) -ge 24 ]] || [[ $(tput lines) -le 26 ]]; then
+  if [[ $(tput lines) -ge 24 ]] && [[ $(tput lines) -le 26 ]]; then
     # show the banner only in an 80x24 default terminal
     echo -n "[Press Enter]"
     read -r
