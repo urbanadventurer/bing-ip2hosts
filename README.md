@@ -32,6 +32,8 @@ Unlike other many other recon tools that web scrape Bing, this tool has smart sc
 
 ## Bing Web Scraping
 
+![Search by IP address with Bing](https://user-images.githubusercontent.com/101783/69555123-1cd1c800-0fbc-11ea-828c-fe6a4c54ed09.gif)
+
 Bing provides a feature unique to search engines - it allows searching by IP address. To try this, go to Bing.com and search for `IP:40.113.200.201`. It should show you results from microsoft.com. If it shows empty results, then add a single dot.
 
 ### Smart Scraping Behaviour
