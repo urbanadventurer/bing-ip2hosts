@@ -32,6 +32,7 @@ STOP_AFTER_PAGES=5
 BING_SETLANG=en-us
 BING_SETMKT=
 UNAME=$(uname)
+USER_AGENT="Wget/1.19.4 (linux-gnu)" # Bing responds differently to wget version 1.20+
 
 N="\033[0;0m"  #NORMAL
 W="\033[0;97m" #WHITE
@@ -228,7 +229,7 @@ function scrape_ip(){
     fi
 
     f_scraped_html=$(mktemp -p "$TMP_DIR" -t bing-ip2hosts.tmp.XXXXXX 2>/dev/null || mktemp "$TMP_DIR"/bing-ip2hosts.tmp.XXXXXX)
-    if ! wget --quiet --no-check-certificate --output-document "$f_scraped_html" "$url"; then
+    if ! wget --quiet --no-check-certificate --user-agent "$USER_AGENT" --output-document "$f_scraped_html" "$url"; then
       echo -e "\n${R}wget failed to scrape $url" >&2
       exit 1
     fi
