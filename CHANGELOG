@@ -1,6 +1,7 @@
-Version 1.0.2 ?
+Version 1.0.2 April 20th, 2020
 
 ## FIXES
+* Fixed issue #3 when using latest Wget version (v1.20), this caused the error "Stopping. The search results count is missing."
 * Fixed readline after showing banner
 
 ## MISC
