@@ -32,7 +32,7 @@ STOP_AFTER_PAGES=5
 BING_SETLANG=en-us
 BING_SETMKT=
 UNAME=$(uname)
-USER_AGENT="Wget/1.19.4 (linux-gnu)" # Bing responds differently to wget version 1.20+
+USER_AGENT="Wget/1.19 (linux-gnu)" # Bing responds differently to wget version 1.20+
 
 N="\033[0;0m"  #NORMAL
 W="\033[0;97m" #WHITE
