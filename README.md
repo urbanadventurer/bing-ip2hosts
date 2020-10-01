@@ -183,6 +183,8 @@ This project is licensed under GPL version 3. See the attached `LICENSE.txt`.
 
 If you'd like to contribute, please fork the repository and make changes as you'd like. Pull requests are warmly welcome.
 
+### Community contributors
+- @paralax
 
 ## Acknowledgments
 
