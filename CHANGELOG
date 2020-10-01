@@ -1,8 +1,13 @@
-Version 1.0.3 October 2nd, 2020
+Version 1.0.4 October 2nd, 2020
 
 ## MISC
 * Fixed spelling in README.md (@paralax)
 * Added Community Contributors section to README.md
+
+Version 1.0.3 June 8th, 2020
+
+## MISC
+* Fixed issue #4 with Bing caused the error "Stopping. The search results count is missing."
 
 Version 1.0.2 April 20th, 2020
 
