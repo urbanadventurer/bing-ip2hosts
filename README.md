@@ -26,7 +26,7 @@ Unlike other many other recon tools that web scrape Bing, this tool has smart sc
 - Output to file, in list or CSV format.
 - Bing API key not required.
 - Select the search language and market.
-- Specify targets from the commandline or from a file.
+- Specify targets from the command line or from a file.
 - Lightweight Bash shell script without heavy dependencies.
 
 
@@ -54,7 +54,7 @@ If searching by an IP address returns empty search results, add a single dot. Bi
 
 ### Search Language and Market
 
-By default this tool specifies the search langauge as "en-us". The market is left as unset, as this seems to maximize results. 
+By default this tool specifies the search language as "en-us". The market is left as unset, as this seems to maximize results. 
 
 The following URL parameters can be configured:
 - setlang (Language)
@@ -138,7 +138,7 @@ There is NO WARRANTY, to the extent permitted by law.
 
 * macOS Catalina
 
-The version of Bash bundled with macOS was published in 2007 and is the most recent version licenced with GPLv2. More recent versions are licenced with GPLv3, with licence terms that preclude Apple from bundling it in macOS.
+The version of Bash bundled with macOS was published in 2007 and is the most recent version licensed with GPLv2. More recent versions are licensed with GPLv3, with licence terms that preclude Apple from bundling it in macOS.
 
 ```
 GNU bash, version 3.2.57(1)-release (x86_64-apple-darwin19)
