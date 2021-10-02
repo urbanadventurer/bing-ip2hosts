@@ -1,3 +1,8 @@
+Version 1.0.5 October 2nd, 2021
+
+## MISC
+* Changed User-Agent to wget/1.20. Fixed an error where it finds no results. Thanks @mathieu-aubin
+
 Version 1.0.4 October 2nd, 2020
 
 ## MISC

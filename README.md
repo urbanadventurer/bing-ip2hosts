@@ -185,6 +185,7 @@ If you'd like to contribute, please fork the repository and make changes as you'
 
 ### Community contributors
 - @paralax
+- @mathieu-aubin (bug fix)
 
 ## Acknowledgments
 
