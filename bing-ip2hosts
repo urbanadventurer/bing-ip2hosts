@@ -20,7 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-VERSION=1.0.5
+VERSION=1.0.6
 TMP_DIR="${TMPDIR:-/tmp}"
 QUIET=0
 OUTPUT_IP=0
@@ -32,7 +32,7 @@ STOP_AFTER_PAGES=5
 BING_SETLANG=en-us
 BING_SETMKT=
 UNAME=$(uname)
-USER_AGENT="Wget/1.20 (linux-gnu)" # Bing responds differently to wget version 1.20+
+USER_AGENT=$(wget -d localhost -O/dev/null 2>&1 | grep ^User-Agent | awk '{ print $2 }' | awk 'BEGIN{FS=OFS="."} NF--')"(linux-gnu)" # bing responds differntly to versions of wget and this tries to detect the actual version instead of a static string
 
 N="\033[0;0m"  #NORMAL
 W="\033[0;97m" #WHITE
@@ -120,7 +120,7 @@ PROGRESS="$G  m,           $DG -----.--[$N bing-ip2hosts v$VERSION $DG]---------
 $G  #####             $DG | $N Searching    : $IP
 $G  ####b             $DG | $N$Y Found        : $uniq_hosts 
 $G  ####b             $DG | $N Scraped pages: $page  
-$G  ####b 1mw,        $DG | $N 
+$G  ####b 1mw,        $DG | $N User-Agent:  : $USER_AGENT
 $G  ####b  1#####Nw,  $DG | $N Page Title   : $page_title
 $G  ####i   %########[$DG | $N Results      : $results_count
 $G  ####n      2#####[$DG | $N Pagination   : $highlight_paginated_links
@@ -348,6 +348,7 @@ OPTIONS are:
 -q\tQuiet. Disable output except for final results.
 -t DIR\tUse this directory instead of /tmp.
 -V\tDisplay the version number of bing-ip2hosts and exit.
+-a\tChange the User-Agent (Default: $USER_AGENT).
 "
   dependency_check
   exit 1
@@ -359,7 +360,7 @@ fi
 
 dependency_check
 
-while getopts "i:o:n:l:m:ucqt:V" optionName; do
+while getopts "i:o:n:l:m:ucqt:V:a:" optionName; do
   case "$optionName" in
     i) INPUT_FILE=$OPTARG;;
     o) OUTPUT_FILE=$OPTARG;;
@@ -371,6 +372,7 @@ while getopts "i:o:n:l:m:ucqt:V" optionName; do
     q) QUIET=1;;
     t) TMP_DIR="$OPTARG";;
     V) echo "bing-ip2hosts v$VERSION"; exit;;
+    a) USER_AGENT=$OPTARG;;
 [?]) echo "Error"; exit 1;;
 esac
 done
